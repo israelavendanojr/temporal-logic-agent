@@ -1,12 +1,9 @@
-# Crazyflie Mission Planner Agent
+# UAV Task Planner Agent
 
 An AI agent that translates NLP to LTL for a Crazyflie drone.
------
 
-## Core Concepts
-
-  * **Natural Language Processing (NLP)**: The AI's ability to understand your English commands, such as "fly to X" or "wait 5 seconds."
-  * **Linear Temporal Logic (LTL)**: A formal language used to define drone missions. For example, the command `F(at(Y))` means "Eventually, be at location Y."
+* **Natural Language Processing (NLP)**: The AI's ability to understand your English commands, such as "fly to X" or "wait 5 seconds."
+* **Linear Temporal Logic (LTL)**: A formal language used to define drone missions. For example, the command `F(at(Y))` means "Eventually, be at location Y."
 
 -----
 
