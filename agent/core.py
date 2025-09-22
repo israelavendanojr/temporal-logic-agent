@@ -22,60 +22,58 @@ class AgentState(TypedDict):
 # LangGraph Node Functions
 # -----------------------------
 def translate_node(state: AgentState):
-    """Translates the user's query into an LTL formula."""
+    """Translates the user's query into an intermediate format."""
     query = state['messages'][-1].content
-    ltl = translate_to_ltl(query)
+    ltl = translate_to_ltl.invoke(query)
     return {"messages": [HumanMessage(content=ltl)], "ltl_formula": ltl}
 
 def validate_node(state: AgentState):
-    """Validates the LTL formula."""
+    """Verifies the LTL formula is syntactically valid."""
     ltl = state['ltl_formula']
-    is_valid = validate_ltl_formula(ltl)
+    is_valid = validate_ltl_formula.invoke(ltl)
     return {"messages": [HumanMessage(content=str(is_valid))]}
-
+    
 def check_feasibility_node(state: AgentState):
     """Checks the feasibility of the LTL formula."""
     ltl = state['ltl_formula']
-    feasibility = check_feasibility(ltl)
+    feasibility = check_feasibility.invoke(ltl)
     return {"messages": [HumanMessage(content=feasibility)]}
     
 def clarify_node(state: AgentState):
     """Asks the user for clarification."""
     query = state['messages'][0].content
-    clarification_msg = ask_for_clarification(query)
+    clarification_msg = ask_for_clarification.invoke(query)
     return {"messages": [HumanMessage(content=clarification_msg)]}
 
 def format_final_answer(state: AgentState):
-    """Formats the final answer based on the feasibility check."""
-    feasibility_result = state['messages'][-1].content
-    if "FEASIBLE" in feasibility_result:
+    """Formats the final answer based on the feasibility and validation checks."""
+    last_message = state['messages'][-1].content
+    
+    if last_message == "FEASIBLE":
         return {"messages": [HumanMessage(content=state['ltl_formula'])]}
-    else:
-        return {"messages": [HumanMessage(content=feasibility_result)]}
-        
+    elif last_message == "NOT FEASIBLE":
+        return {"messages": [HumanMessage(content="I'm sorry, that mission is not feasible.")]}
+    elif last_message == "False":
+        return {"messages": [HumanMessage(content="I'm sorry, I couldn't translate that request into a valid mission.")]}
+    
+    return {"messages": [HumanMessage(content=last_message)]}
+
 # -----------------------------
 # Graph Router
 # -----------------------------
 def router(state: AgentState) -> str:
-    """Determines the next step based on the LTL formula and validation results."""
+    """Determines the next step based on the translation result."""
     last_message_content = state['messages'][-1].content
     
-    if state.get('ltl_formula') and "AMBIGUOUS_QUERY" in state['ltl_formula']:
+    if last_message_content == "AMBIGUOUS_QUERY":
         return "clarify"
-    elif state.get('ltl_formula') and "F(at(unknown))" in state['ltl_formula']:
-        return "check_feasibility"
-    elif state.get('ltl_formula') and last_message_content == state['ltl_formula']:
-        return "validate"
-        
-    if last_message_content == "True":
-        return "check_feasibility"
-    if last_message_content == "False":
-        return "end"
-
-    if "FEASIBLE" in last_message_content or "NOT FEASIBLE" in last_message_content:
-        return "final_answer"
     
-    return "end"
+    # Check for known logical fails before attempting validation
+    if "F(at(unknown))" in last_message_content:
+        return "check_feasibility"
+        
+    # All other cases go to the validator
+    return "validate"
 
 # -----------------------------
 # Graph Compilation
@@ -92,18 +90,20 @@ def get_compiled_graph():
 
     workflow.set_entry_point("translate")
     
+    # After translation, route based on the LLM's raw output
     workflow.add_conditional_edges("translate", router, {
-        "validate": "validate",
-        "check_feasibility": "check_feasibility",
         "clarify": "clarify",
-        "end": END
+        "validate": "validate",
+        "check_feasibility": "check_feasibility"
     })
     
-    workflow.add_conditional_edges("validate", router, {
+    # After validation, route based on the result
+    workflow.add_conditional_edges("validate", lambda x: "check_feasibility" if x['messages'][-1].content == "True" else "final_answer", {
         "check_feasibility": "check_feasibility",
-        "end": "final_answer"
+        "final_answer": "final_answer"
     })
     
+    # All final outputs from validation, feasibility, and clarification should go to a final answer or END
     workflow.add_edge("check_feasibility", "final_answer")
     workflow.add_edge("clarify", END)
     workflow.add_edge("final_answer", END)
