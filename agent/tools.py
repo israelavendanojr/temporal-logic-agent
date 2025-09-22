@@ -12,17 +12,13 @@ MOCK_OBJECTS = {
 }
 MOCK_CRAZYFLIE_LOCATION = (-0.1, 0.2, 0.1)
 
+@tool
 def translate_with_llm(natural_language_query: str) -> str:
     """Helper function to perform the actual LLM-based translation."""
     llm = ChatOllama(model="llama3.2", temperature=0, base_url="http://localhost:11434")
 
     known_objects = ", ".join(MOCK_OBJECTS.keys())
-<<<<<<< HEAD
-    current_location = str(MOCK_CRAZYFLIE_LOCATION) 
-
-=======
     
->>>>>>> ac54127 (Tooling)
     system_prompt = (
         "You are a highly reliable translator of Crazyflie drone missions into Linear Temporal Logic (LTL). "
         "Your mission is to output ONLY the LTL formula for a given command. No other text.\n"
@@ -38,10 +34,7 @@ def translate_with_llm(natural_language_query: str) -> str:
         "  User: Fly to X \n"
         "  Output: F(at(X))\n"
         "- **Relative Movement:** A single action to move in a cardinal direction. Uses `move(direction, distance)`. \n"
-<<<<<<< HEAD
-=======
         "  Valid directions: `forward`, `backward`, `up`, `down`. \n"
->>>>>>> ac54127 (Tooling)
         "  User: Go forward 10 meters \n"
         "  Output: move(forward, 10)\n"
         "- **Temporal Wait:** A single action to pause. Uses `wait(n)`. \n"
@@ -72,46 +65,52 @@ def translate_with_llm(natural_language_query: str) -> str:
 @tool
 def translate_to_ltl(natural_language_query: str) -> str:
     """Translates a natural language command into a complete LTL formula."""
-    return translate_with_llm(natural_language_query)
+    return translate_with_llm.invoke(natural_language_query)
+
+@tool
+def sanitize_ltl_formula(ltl_formula: str) -> str:
+    """Cleans up and normalizes the LTL formula string for consistent validation."""
+    cleaned = ltl_formula.replace(" ", "")
+    cleaned = cleaned.replace("U", " U ")
+    return " ".join(cleaned.split())
 
 @tool
 def validate_ltl_formula(ltl_formula: str) -> bool:
     """
     Verifies that an LTL formula is syntactically valid and grounded in the environment.
     """
-<<<<<<< HEAD
-    valid_objects = "|".join(re.escape(obj) for obj in MOCK_OBJECTS.keys())
-    valid_directions = "forward|backward|up|down"
-
-    at_pattern = f"F\\(at\\((?:{valid_objects}|unknown|mars)\\)\\)"
-    move_pattern = f"move\\((?:{valid_directions}), \\d+\\)"
-    wait_pattern = "wait\\(\\d+\\)"
-    return_pattern = "return_to_start\\(\\)"
-    general_pattern = f"^(?:{at_pattern}|{move_pattern}|{wait_pattern}|{return_pattern})(?: U (?:{at_pattern}|{move_pattern}|{wait_pattern}|{return_pattern}))*$"
-
-    return bool(re.match(general_pattern, ltl_formula))
-
-@tool
-def ask_for_clarification(ambiguous_query: str) -> str:
-    """Asks the user for clarification on an ambiguous query."""
-    return "I need more information to process your request. Can you please clarify?"
-=======
-    # Normalize the string by removing extra whitespace
-    normalized_ltl = " ".join(ltl_formula.split())
+    # Use a more robust approach with multiple regex patterns
     
-    valid_objects = "|".join(re.escape(obj) for obj in MOCK_OBJECTS.keys())
-    valid_directions = "forward|backward|up|down"
-
-    at_pattern = f"F\\(at\\((?:{valid_objects}|unknown)\\)\\)"
-    move_pattern = f"move\\((?:{valid_directions}),\\s*\\d+\\)"
-    wait_pattern = "wait\\(\\d+\\)"
-    return_pattern = "return_to_start\\(\\)"
+    # Pattern for single LTL fragments
+    fragment_pattern = re.compile(
+        r"^(F\(at\((?:X|Y|Z|unknown)\)\)|"
+        r"move\((?:forward|backward|up|down),\d+\)|"
+        r"wait\(\d+\)|"
+        r"return_to_start\(\))$"
+    )
     
-    # Updated regex to handle multi-step chains with U operator and optional whitespace
-    general_pattern = f"^(?:{at_pattern}|{move_pattern}|{wait_pattern}|{return_pattern})(?:\\s*U\\s*(?:{at_pattern}|{move_pattern}|{wait_pattern}|{return_pattern}))*$"
+    # Pattern for sequences with 'U'
+    sequence_pattern = re.compile(
+        r"^(F\(at\((?:X|Y|Z|unknown)\)\s*U\s*)*"
+        r"(move\((?:forward|backward|up|down),\d+\)\s*U\s*)*"
+        r"(wait\(\d+\)\s*U\s*)*"
+        r"(return_to_start\(\))?$"
+    )
     
-    return bool(re.match(general_pattern, normalized_ltl))
->>>>>>> ac54127 (Tooling)
+    # Check if the formula matches either a single fragment or a valid sequence
+    if fragment_pattern.match(ltl_formula):
+        return True
+        
+    # Split the formula by the 'U' operator and check each part
+    parts = ltl_formula.split(' U ')
+    
+    if len(parts) > 1:
+        for part in parts:
+            if not fragment_pattern.match(part):
+                return False
+        return True
+        
+    return False
 
 @tool
 def check_feasibility(ltl_formula: str) -> str:
@@ -121,10 +120,6 @@ def check_feasibility(ltl_formula: str) -> str:
     
     known_objects = MOCK_OBJECTS.keys()
     
-<<<<<<< HEAD
-=======
-    # Corrected regex to avoid extra backslash
->>>>>>> ac54127 (Tooling)
     objects_in_formula = re.findall(r"at\((.*?)\)", ltl_formula)
     
     for obj in objects_in_formula:

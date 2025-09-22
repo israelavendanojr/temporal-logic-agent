@@ -5,6 +5,7 @@ from langgraph.prebuilt import ToolNode
 from langgraph.graph import StateGraph, END
 from .tools import (
     translate_to_ltl,
+    sanitize_ltl_formula,
     validate_ltl_formula,
     check_feasibility,
     ask_for_clarification
@@ -26,6 +27,12 @@ def translate_node(state: AgentState):
     query = state['messages'][-1].content
     ltl = translate_to_ltl.invoke(query)
     return {"messages": [HumanMessage(content=ltl)], "ltl_formula": ltl}
+
+def sanitize_node(state: AgentState):
+    """Sanitizes the LTL formula string."""
+    ltl = state['ltl_formula']
+    sanitized_ltl = sanitize_ltl_formula.invoke(ltl)
+    return {"messages": [HumanMessage(content=sanitized_ltl)], "ltl_formula": sanitized_ltl}
 
 def validate_node(state: AgentState):
     """Verifies the LTL formula is syntactically valid."""
@@ -72,8 +79,8 @@ def router(state: AgentState) -> str:
     if "F(at(unknown))" in last_message_content:
         return "check_feasibility"
         
-    # All other cases go to the validator
-    return "validate"
+    # All other cases go to the new sanitize node
+    return "sanitize"
 
 # -----------------------------
 # Graph Compilation
@@ -83,6 +90,7 @@ def get_compiled_graph():
     workflow = StateGraph(AgentState)
     
     workflow.add_node("translate", translate_node)
+    workflow.add_node("sanitize", sanitize_node)
     workflow.add_node("validate", validate_node)
     workflow.add_node("check_feasibility", check_feasibility_node)
     workflow.add_node("clarify", clarify_node)
@@ -93,9 +101,12 @@ def get_compiled_graph():
     # After translation, route based on the LLM's raw output
     workflow.add_conditional_edges("translate", router, {
         "clarify": "clarify",
-        "validate": "validate",
+        "sanitize": "sanitize",
         "check_feasibility": "check_feasibility"
     })
+    
+    # After sanitization, proceed to validation
+    workflow.add_edge("sanitize", "validate")
     
     # After validation, route based on the result
     workflow.add_conditional_edges("validate", lambda x: "check_feasibility" if x['messages'][-1].content == "True" else "final_answer", {
