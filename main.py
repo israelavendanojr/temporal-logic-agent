@@ -1,8 +1,3 @@
-"""
-LangGraph ReAct Agent with Ollama
-This script demonstrates a robust, multi-step pipeline for a mission planner agent.
-"""
-
 import argparse
 from langchain_core.messages import HumanMessage
 from agent.core import get_compiled_graph
@@ -64,12 +59,30 @@ def main():
     
     if choice == '1':
         queries = [
-            "fly to the blue sphere and wait 5 seconds, then fly to the red cube",
-            "Fly to object 1, then fly back to the start location",
-            "fly to the red cube",
-            "fly to the box",
-            "Fly to Mars",
-            "Find the treasure"
+            # Test absolute movements with varied phrasing
+            "move to Y",
+            "head over to Z",
+            "fly to X",
+            
+            # Test waits with varied phrasing
+            "pause for 15 seconds",
+            "wait 5 seconds",
+            
+            # Test relative movements with varied phrasing
+            "go forward 10 meters",
+            "go up 2 meters",
+            
+            # Test complex, multi-step sequences
+            "go to X then wait 5 seconds then go to Z",
+            "fly up 10 meters, then fly to Y, then fly down 10 meters, then fly to Z",
+            "fly forward 10 meters, then back to the start",
+            
+            # Test edge cases from the prompt's negative examples
+            "find the treasure",
+            "fly to Mars",
+            "do a backflip",
+            "say hello",
+            "fly sideways 5 meters"
         ]
         run_queries(app, queries)
     elif choice == '2':
