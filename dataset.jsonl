@@ -1,0 +1,100 @@
+{"instruction": "move to Y", "output": "F(at(Y))"}
+{"instruction": "go up 2 meters", "output": "move(up,2)"}
+{"instruction": "go to X then wait 5 seconds then go to Z", "output": "F(at(X)) U wait(5) U F(at(Z))"}
+{"instruction": "fly up 10 meters, then fly to Y, then fly down 10 meters, then fly to Z", "output": "move(up,10) U F(at(Y)) U move(down,10) U F(at(Z))"}
+{"instruction": "fly forward 10 meters, then back to the start", "output": "move(forward,10) U return_to_start()"}
+{"instruction": "find the treasure", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly to Mars", "output": "F(at(unknown))"}
+{"instruction": "fly sideways 5 meters", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly over to X", "output": "F(at(X))"}
+{"instruction": "head towards Y", "output": "F(at(Y))"}
+{"instruction": "move up 5 meters", "output": "move(up,5)"}
+{"instruction": "descend 2 meters", "output": "move(down,2)"}
+{"instruction": "go back 15 meters", "output": "move(backward,15)"}
+{"instruction": "move forward 3 meters", "output": "move(forward,3)"}
+{"instruction": "stay in place for 10 seconds", "output": "wait(10)"}
+{"instruction": "wait for a full minute", "output": "wait(60)"}
+{"instruction": "return to the starting point", "output": "return_to_start()"}
+{"instruction": "go to X and then wait 15 seconds", "output": "F(at(X)) U wait(15)"}
+{"instruction": "go to Y, then head back to the start", "output": "F(at(Y)) U return_to_start()"}
+{"instruction": "move up 5 meters, then go to Z", "output": "move(up,5) U F(at(Z))"}
+{"instruction": "wait 10 seconds, then fly to Y", "output": "wait(10) U F(at(Y))"}
+{"instruction": "fly to Y, wait 5 seconds, then go back 10 meters", "output": "F(at(Y)) U wait(5) U move(backward,10)"}
+{"instruction": "do a barrel roll", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly to another planet", "output": "F(at(unknown))"}
+{"instruction": "find my keys", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "go to the moon", "output": "F(at(unknown))"}
+{"instruction": "rotate 90 degrees", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "activate my camera", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "go right 5 meters", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly 50 miles away", "output": "F(at(unknown))"}
+{"instruction": "go to the red square", "output": "F(at(unknown))"}
+{"instruction": "fly to X then immediately return to start", "output": "F(at(X)) U return_to_start()"}
+{"instruction": "fly up 2 meters and then pause for 30 seconds", "output": "move(up,2) U wait(30)"}
+{"instruction": "travel to X", "output": "F(at(X))"}
+{"instruction": "navigate to Y", "output": "F(at(Y))"}
+{"instruction": "approach Z", "output": "F(at(Z))"}
+{"instruction": "move backward 20 meters", "output": "move(backward,20)"}
+{"instruction": "fly down 5 meters", "output": "move(down,5)"}
+{"instruction": "go up 1 meter", "output": "move(up,1)"}
+{"instruction": "fly forward 7 meters", "output": "move(forward,7)"}
+{"instruction": "pause for 20 seconds", "output": "wait(20)"}
+{"instruction": "stop for 30 seconds", "output": "wait(30)"}
+{"instruction": "hold position for 2 minutes", "output": "wait(120)"}
+{"instruction": "fly back home", "output": "return_to_start()"}
+{"instruction": "come back to the launch pad", "output": "return_to_start()"}
+{"instruction": "initiate return to origin", "output": "return_to_start()"}
+{"instruction": "fly to Y, then wait 15 seconds, then go up 5 meters", "output": "F(at(Y)) U wait(15) U move(up,5)"}
+{"instruction": "go to Z, then go back 10 meters, then return to the start", "output": "F(at(Z)) U move(backward,10) U return_to_start()"}
+{"instruction": "move forward 5 meters and then pause for 5 seconds", "output": "move(forward,5) U wait(5)"}
+{"instruction": "fly to point Y", "output": "F(at(Y))"}
+{"instruction": "proceed to Z", "output": "F(at(Z))"}
+{"instruction": "go to point X", "output": "F(at(X))"}
+{"instruction": "ascend 1 meter", "output": "move(up,1)"}
+{"instruction": "go up 3 meters", "output": "move(up,3)"}
+{"instruction": "descend 5 meters", "output": "move(down,5)"}
+{"instruction": "fly down 7 meters", "output": "move(down,7)"}
+{"instruction": "go back 20 meters", "output": "move(backward,20)"}
+{"instruction": "retreat 12 meters", "output": "move(backward,12)"}
+{"instruction": "move forward 8 meters", "output": "move(forward,8)"}
+{"instruction": "advance 15 meters", "output": "move(forward,15)"}
+{"instruction": "pause for 5 seconds", "output": "wait(5)"}
+{"instruction": "wait 25 seconds", "output": "wait(25)"}
+{"instruction": "hold for 1 minute", "output": "wait(60)"}
+{"instruction": "stay put for 120 seconds", "output": "wait(120)"}
+{"instruction": "return to home base", "output": "return_to_start()"}
+{"instruction": "fly to the launch site", "output": "return_to_start()"}
+{"instruction": "move to X and then wait 30 seconds", "output": "F(at(X)) U wait(30)"}
+{"instruction": "go up 5 meters and then go to Z", "output": "move(up,5) U F(at(Z))"}
+{"instruction": "wait 15 seconds, then go to Y", "output": "wait(15) U F(at(Y))"}
+{"instruction": "move down 2 meters, then wait 5 seconds, then return to start", "output": "move(down,2) U wait(5) U return_to_start()"}
+{"instruction": "go to Y, then ascend 5 meters, then wait 10 seconds, then go to Z", "output": "F(at(Y)) U move(up,5) U wait(10) U F(at(Z))"}
+{"instruction": "fly up 2 meters, then forward 3 meters, then down 2 meters, then go to Y", "output": "move(up,2) U move(forward,3) U move(down,2) U F(at(Y))"}
+{"instruction": "hover", "output": "wait(unknown)"}
+{"instruction": "land", "output": "move(down,unknown)"}
+{"instruction": "fly around in a circle", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "take a picture", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "go to the roof", "output": "F(at(unknown))"}
+{"instruction": "move up one meter, wait two seconds, then go back to the start", "output": "move(up,1) U wait(2) U return_to_start()"}
+{"instruction": "fly to location Z, then go up 10 meters, then wait 3 minutes", "output": "F(at(Z)) U move(up,10) U wait(180)"}
+{"instruction": "go to Y, then move forward 5 meters, then descend 2 meters, then go to X", "output": "F(at(Y)) U move(forward,5) U move(down,2) U F(at(X))"}
+{"instruction": "fly in a loop", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "navigate to home", "output": "return_to_start()"}
+{"instruction": "move vertically 5 meters", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly horizontally 10 meters", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "go left 3 meters", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly right 4 meters", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly to the next room", "output": "F(at(unknown))"}
+{"instruction": "go to the kitchen", "output": "F(at(unknown))"}
+{"instruction": "go to the last known point", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "go to X, then fly forward 20 meters, and then wait 1 minute", "output": "F(at(X)) U move(forward,20) U wait(60)"}
+{"instruction": "go up 5 meters, wait for 15 seconds, and then return home", "output": "move(up,5) U wait(15) U return_to_start()"}
+{"instruction": "travel to Y, then go back 5 meters, then wait 10 seconds", "output": "F(at(Y)) U move(backward,5) U wait(10)"}
+{"instruction": "fly forward 10 meters, then up 5 meters, then to X, then down 5 meters", "output": "move(forward,10) U move(up,5) U F(at(X)) U move(down,5)"}
+{"instruction": "go to Z and then come back to the starting point", "output": "F(at(Z)) U return_to_start()"}
+{"instruction": "hold position for 2 seconds", "output": "wait(2)"}
+{"instruction": "fly to the last point I mentioned", "output": "AMBIGUOUS_QUERY"}
+{"instruction": "fly to X, then fly down 1 meter, then wait 5 seconds, then return to the start", "output": "F(at(X)) U move(down,1) U wait(5) U return_to_start()"}
+{"instruction": "go up 10 meters, go to Y, then wait 3 minutes, then move back 5 meters", "output": "move(up,10) U F(at(Y)) U wait(180) U move(backward,5)"}
+{"instruction": "wait for a minute, then go to X, then descend 2 meters, and fly forward 3 meters", "output": "wait(60) U F(at(X)) U move(down,2) U move(forward,3)"}
+{"instruction": "go to Y, then go back 15 meters, then wait 15 seconds, and fly to Z", "output": "F(at(Y)) U move(backward,15) U wait(15) U F(at(Z))"}
