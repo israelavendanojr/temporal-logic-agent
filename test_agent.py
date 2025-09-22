@@ -1,5 +1,5 @@
 """
-Improved LangGraph ReAct Agent with Ollama
+LangGraph ReAct Agent with Ollama
 This script demonstrates a Thought-Action-Observation loop using LangGraph and a local Ollama model.
 """
 
@@ -19,30 +19,103 @@ from langgraph.graph import StateGraph, END
 class AgentState(TypedDict):
     """Represents the state of our agent."""
     messages: Annotated[Sequence[BaseMessage], operator.add]
+    ltl_formula: str  # Store the translated LTL formula
+    environment_objects: str  # Context on known objects
+    crazyflie_location: str  # Crazyflie's current location
+    needs_clarification: bool  # A flag to signal if more info is needed
 
 
 # -----------------------------
 # Tools
 # -----------------------------
+
+# MOCK DATA for a stateful environment
+MOCK_OBJECTS = {
+    "object_1": {"name": "red cube", "location": "(1, 2, 3)"},
+    "object_2": {"name": "blue sphere", "location": "(4, 5, 6)"},
+    "object_3": {"name": "start location", "location": "(0, 0, 0)"}
+}
+
+MOCK_CRAZYFLIE_LOCATION = "(-0.1, 0.2, 0.1)"
+
 @tool
-def search_the_web(query: str) -> str:
-    """Searches the internet for information on a given query."""
-    print(f"Executing Search Tool for query: '{query}'")
-    return f"Search results for '{query}': Found relevant information about the topic."
-
+def translate_to_ltl(natural_language_query: str) -> str:
+    """Translates a natural language command into a complete LTL formula.
+    
+    The tool has knowledge of the following objects and their names:
+    - red cube (object_1) at (1, 2, 3)
+    - blue sphere (object_2) at (4, 5, 6)
+    - start location (object_3) at (0, 0, 0)
+    
+    The Crazyflie's current location is (-0.1, 0.2, 0.1).
+    
+    Use the following LTL predicates:
+    - F(at(object_id)): 'Eventually' at the object's location.
+    - G(at(object_id)): 'Always' at the object's location.
+    - U(left_operand, right_operand): 'Until' right_operand is true.
+    - P(at(object_id)): 'Previously' at the object's location.
+    - wait(seconds): Wait for a specified number of seconds.
+    - return_to_start(): Return to the starting location (object_3).
+    
+    Example input: "Fly to object 1, then fly back to the start location"
+    Example output: "F(at(object_1)) U return_to_start()"
+    
+    If the request is ambiguous or references an unknown object, return "AMBIGUOUS_QUERY"."""
+    
+    # In a full implementation, this would be an LLM call.
+    # For now, it is a mock.
+    
+    # We will use simple if/else logic for a mock
+    if "object 1, then fly back to the start" in natural_language_query:
+        return "F(at(object_1)) U return_to_start()"
+    if "object 1, wait 5 seconds, then fly to object 2" in natural_language_query:
+        return "F(at(object_1)) U wait(5) U F(at(object_2))"
+    if "Fly up 6 inches, then fly down 12, then return to your initial altitude" in natural_language_query:
+        return "move_up(6) U move_down(12) U P(at(initial_altitude))"
+    if "Fly to the box" in natural_language_query:
+        return "AMBIGUOUS_QUERY"
+    if "red cube" in natural_language_query.lower():
+        return "F(at(object_1))"
+    if "blue sphere" in natural_language_query.lower():
+        return "F(at(object_2))"
+    if "start location" in natural_language_query.lower():
+        return "F(at(object_3))"
+    
+    return "F(at(unknown))"
 
 @tool
-def calculate(expression: str) -> str:
-    """Performs basic mathematical calculations."""
-    print(f"Executing Calculator Tool for expression: '{expression}'")
-    try:
-        result = eval(expression.replace("^", "**"))
-        return f"The result of {expression} is {result}"
-    except Exception:
-        return f"Could not calculate {expression}. Please check the expression format."
+def validate_ltl_formula(ltl_formula: str) -> bool:
+    """Verifies that an LTL formula is syntactically valid and grounded in the environment."""
+    
+    # Mock validation. In a real system, you'd use a library like SPOT.
+    if ltl_formula in ["F(at(object_1)) U return_to_start()", 
+                      "F(at(object_1)) U wait(5) U F(at(object_2))",
+                      "move_up(6) U move_down(12) U P(at(initial_altitude))",
+                      "F(at(object_1))", "F(at(object_2))", "F(at(object_3))"]:
+        return True
+    
+    return False
 
+@tool
+def ask_for_clarification(ambiguous_query: str) -> str:
+    """Asks the user for clarification on an ambiguous query."""
+    
+    if "box" in ambiguous_query:
+        return "There are multiple objects that could be considered 'a box'. Please specify which box you mean, for example 'the red cube'."
+    
+    return "I need more information to process your request. Can you please clarify?"
 
-tools = [search_the_web, calculate]
+@tool
+def check_feasibility(ltl_formula: str) -> bool:
+    """Checks if the LTL formula is physically possible to execute."""
+    
+    # Mock feasibility check.
+    if "F(at(unknown))" in ltl_formula:
+        return False
+    
+    return True
+
+tools = [translate_to_ltl, validate_ltl_formula, ask_for_clarification, check_feasibility]
 
 
 # -----------------------------
@@ -62,7 +135,33 @@ def setup_agent(model_name: str = "llama3.2", temperature: float = 0):
 
     def call_model(state: AgentState):
         messages = state["messages"]
-        response = llm_with_tools.invoke(messages)
+        
+        # New System Prompt for the LLM
+        system_prompt = f"""
+        You are a highly specialized Crazyflie flight mission planner. Your sole purpose is to translate natural language commands into a formal Linear Temporal Logic (LTL) formula and ensure the plan is valid and ready for execution.
+
+        You have access to the following tools:
+        - translate_to_ltl: Use this FIRST to convert the user's request into an LTL formula. You must use this tool before any other action.
+        - validate_ltl_formula: After translating, you MUST validate the LTL formula to ensure it is correct.
+        - ask_for_clarification: If a query is ambiguous or you cannot translate it, you must use this tool to ask the user for more information.
+        - check_feasibility: After validating the LTL, you must check if the plan is physically possible to execute.
+
+        Here is the current state of the environment and the drone:
+        - Current drone location: {MOCK_CRAZYFLIE_LOCATION}
+        - Known objects: {MOCK_OBJECTS}
+
+        Your workflow MUST be:
+        1. Use `translate_to_ltl` on the user's request.
+        2. If the translation is 'AMBIGUOUS_QUERY' or contains 'unknown', use `ask_for_clarification` with the ambiguous_query parameter set to the original user request.
+        3. If the translation is successful, use `validate_ltl_formula`.
+        4. If validation is successful, use `check_feasibility`.
+        5. If all checks pass, respond with the final, validated LTL formula. Do not provide any other text.
+        6. If any step fails, explain why and stop.
+        """
+        
+        # Prepend the system prompt to the user message
+        full_prompt = [HumanMessage(content=system_prompt)] + messages
+        response = llm_with_tools.invoke(full_prompt)
         return {"messages": [response]}
 
     def should_continue(state: AgentState) -> str:
@@ -145,8 +244,9 @@ if __name__ == "__main__":
     app = setup_agent()
 
     queries = [
-        "Tell me what 69 - 2 is equal to and then tell me what the sum of each digit in that answer is"
+        "Fly to object 1, then fly back to the start location",
+        "Fly to the box"  # This should trigger the ask_for_clarification tool
     ]
 
     run_queries(app, queries)
-    run_interact(app)
+    # run_interact(app)  # You can enable this to test interactively
