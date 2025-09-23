@@ -1,3 +1,6 @@
 venv/
 __pycache__/
+<<<<<<< HEAD
 models/translation_model.gguf
+=======
+>>>>>>> 1376d240e726077079c541c1795c56544cf09b66
