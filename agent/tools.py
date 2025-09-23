@@ -1,8 +1,12 @@
 import re
+import logging
 from typing import TypedDict, Annotated, Sequence
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
-from langchain_ollama import ChatOllama
+from .model_server import get_gguf_model
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # MOCK DATA for a stateful environment
 MOCK_OBJECTS = {
@@ -15,45 +19,18 @@ MOCK_CRAZYFLIE_LOCATION = (-0.1, 0.2, 0.1)
 @tool
 def translate_with_llm(natural_language_query: str) -> str:
     """Helper function to perform the actual LLM-based translation."""
-    llm = ChatOllama(model="llama3.2", temperature=0, base_url="http://localhost:11434")
+    try:
+        llm = get_gguf_model()
+    except Exception as e:
+        logger.error(f"Failed to load GGUF model: {e}")
+        return "ERROR: Model not available"
 
     known_objects = ", ".join(MOCK_OBJECTS.keys())
     
+    # Updated system prompt to match the fine-tuned model's training format
     system_prompt = (
-        "You are a highly reliable translator of Crazyflie drone missions into Linear Temporal Logic (LTL). "
-        "Your mission is to output ONLY the LTL formula for a given command. No other text.\n"
-        "\n"
-        "--- Translation Process ---\n"
-        "1. **Analyze Intent:** First, determine the user's intent. Identify the sequence of actions, if any.\n"
-        "2. **Translate to LTL:** Convert each action into its corresponding LTL formula fragment.\n"
-        "3. **Combine Fragments:** For multi-step commands, connect the LTL fragments using the 'U' operator.\n"
-        "4. **Final Output:** Provide only the final, complete LTL formula.\n"
-        "\n"
-        "--- Language Rules & Examples ---\n"
-        "- **Absolute Movement:** A single action to fly to a location. Uses `F(at(object))`. \n"
-        "  User: Fly to X \n"
-        "  Output: F(at(X))\n"
-        "- **Relative Movement:** A single action to move in a cardinal direction. Uses `move(direction, distance)`. \n"
-        "  Valid directions: `forward`, `backward`, `up`, `down`. \n"
-        "  User: Go forward 10 meters \n"
-        "  Output: move(forward, 10)\n"
-        "- **Temporal Wait:** A single action to pause. Uses `wait(n)`. \n"
-        "  User: Wait 5 seconds \n"
-        "  Output: wait(5)\n"
-        "- **Return to Start:** A single action to return home. Uses `return_to_start()`. \n"
-        "  User: Return to the start \n"
-        "  Output: return_to_start()\n"
-        "- **Complex Sequence:** A combination of the above actions. \n"
-        "  User: Fly to Y, then wait 5 seconds, then go back to the start. \n"
-        "  Output: F(at(Y)) U wait(5) U return_to_start()\n"
-        "\n"
-        "--- Edge Case Handling ---\n"
-        "- **Impossible Location:** If the user asks to go to an unknown or impossible place, output: `F(at(unknown))`. \n"
-        "  User: Fly to the moon \n"
-        "  Output: F(at(unknown))\n"
-        "- **Impossible Action:** If the command is an unknown or physically impossible action (e.g., greetings, abstract concepts), output: `AMBIGUOUS_QUERY`. \n"
-        "  User: Do a backflip \n"
-        "  Output: AMBIGUOUS_QUERY\n"
+        "You are a specialized translator that converts natural language drone commands into Linear Temporal Logic (LTL) formulas. "
+        "Respond only with the LTL formula."
     )
 
     response = llm.invoke([
