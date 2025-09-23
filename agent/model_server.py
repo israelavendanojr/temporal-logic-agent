@@ -51,6 +51,7 @@ class GGUFModelWrapper:
                 "model_path": self.model_path,
                 "n_ctx": 256,  # Context length for short LTL outputs
                 "n_threads": None,  # Use all available CPU cores
+                "n_gpu_layers": 16,  
                 "verbose": False,
                 "temperature": 0.0,  # Deterministic output for LTL translation
                 "top_p": 1.0,
