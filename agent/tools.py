@@ -40,9 +40,38 @@ def translate_with_llm(natural_language_query: str) -> str:
     return response.content.strip()
 
 @tool
-def translate_to_ltl(natural_language_query: str) -> str:
-    """Translates a natural language command into a complete LTL formula."""
-    return translate_with_llm.invoke(natural_language_query)
+def translate_to_ltl(natural_language_query: str, conversation_log: list = None, spatial_memory: dict = None) -> str:
+    """Enhanced translation with full conversation context and spatial awareness."""
+    
+    # Build context string for system prompt
+    context_parts = []
+    
+    if spatial_memory:
+        context_parts.append(f"Current drone position: {spatial_memory.get('current_position')}")
+        context_parts.append(f"Start position: {spatial_memory.get('start_position')}")
+        context_parts.append(f"Object locations: {spatial_memory.get('objects')}")
+    
+    if conversation_log:
+        context_parts.append("Previous conversation:")
+        for user_q, ltl_result in conversation_log[-5:]:  # Last 5 exchanges
+            context_parts.append(f"User: {user_q}")
+            context_parts.append(f"LTL: {ltl_result}")
+    
+    # Enhanced system prompt with full context
+    base_prompt = "You are a specialized translator that converts natural language drone commands into Linear Temporal Logic (LTL) formulas."
+    
+    if context_parts:
+        context_section = "\n\nContext:\n" + "\n".join(context_parts)
+        system_prompt = base_prompt + context_section + "\n\nFor complex multi-step queries, reason through the complete sequence. Respond only with the LTL formula."
+    else:
+        system_prompt = base_prompt + " Respond only with the LTL formula."
+
+    response = get_gguf_model().invoke([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=natural_language_query)
+    ])
+    
+    return response.content.strip()
 
 @tool
 def sanitize_ltl_formula(ltl_formula: str) -> str:

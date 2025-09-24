@@ -1,6 +1,7 @@
 import argparse
 from langchain_core.messages import HumanMessage
 from agent.core import get_compiled_graph
+from agent.tools import MOCK_CRAZYFLIE_LOCATION, MOCK_OBJECTS
 
 # Global debug flag
 DEBUG = False
@@ -8,27 +9,77 @@ DEBUG = False
 # -----------------------------
 # Main Functions
 # -----------------------------
-def run_agent(app, query: str):
-    """Run the agent with a given query."""
-    inputs = {"messages": [HumanMessage(content=query)]}
+def run_agent(app, query: str, session_state: dict = None):
+    """Run agent with persistent session state."""
+    
+    # Initialize session state on first run
+    if session_state is None:
+        session_state = {
+            'conversation_log': [],
+            'spatial_memory': {
+                'current_position': MOCK_CRAZYFLIE_LOCATION,
+                'start_position': MOCK_CRAZYFLIE_LOCATION,
+                'objects': MOCK_OBJECTS
+            }
+        }
+    
+    # Add session state to inputs
+    inputs = {
+        "messages": [HumanMessage(content=query)],
+        "conversation_log": session_state['conversation_log'],
+        "spatial_memory": session_state['spatial_memory']
+    }
+    
+    # Run workflow
     final_answer = ""
+    final_state = None
     for output in app.stream(inputs):
         for key, value in output.items():
-            final_answer = value.get("messages", [{}])[-1].content
+            messages = value.get("messages", [])
+            if messages and hasattr(messages[-1], 'content'):
+                final_answer = messages[-1].content
+            final_state = value
+    
+    # Update session state with results
+    if final_state and 'conversation_log' in final_state:
+        session_state['conversation_log'] = final_state['conversation_log']
+        session_state['spatial_memory'] = final_state['spatial_memory']
+    
     print(final_answer)
-    return final_answer
+    return final_answer, session_state
 
 def run_queries(app, queries):
     """Run a list of queries through the agent."""
+    # Initialize session state for all queries
+    session_state = {
+        'conversation_log': [],
+        'spatial_memory': {
+            'current_position': MOCK_CRAZYFLIE_LOCATION,
+            'start_position': MOCK_CRAZYFLIE_LOCATION,
+            'objects': MOCK_OBJECTS
+        }
+    }
+    
     for i, query in enumerate(queries):
         print(f"\nQuery {i+1}: {query}")
         print("Result:", end=" ")
-        run_agent(app, query)
+        _, session_state = run_agent(app, query, session_state)
         print("\n" + "-" * 50)
 
 def run_interact(app):
-    """Start an interactive session with the agent."""
-    print("\nInteractive mode - type 'quit' to exit")
+    """Interactive mode with persistent memory."""
+    print("\nInteractive mode with memory - type 'quit' to exit")
+    
+    # Initialize session memory
+    session_state = {
+        'conversation_log': [],
+        'spatial_memory': {
+            'current_position': MOCK_CRAZYFLIE_LOCATION,
+            'start_position': MOCK_CRAZYFLIE_LOCATION,
+            'objects': MOCK_OBJECTS
+        }
+    }
+    
     while True:
         try:
             user_input = input("\nEnter your question: ").strip()
@@ -36,7 +87,7 @@ def run_interact(app):
                 print("Goodbye!")
                 break
             if user_input:
-                run_agent(app, user_input)
+                _, session_state = run_agent(app, user_input, session_state)
         except KeyboardInterrupt:
             print("\nGoodbye!")
             break
@@ -59,6 +110,7 @@ def main():
     
     if choice == '1':
         queries = [
+            "Go to X, then go to Y, then go to Z, then retrace your steps back to the start",
             # Test absolute movements with varied phrasing
             "move to Y",
             "head over to Z",
@@ -82,7 +134,9 @@ def main():
             "fly to Mars",
             "do a backflip",
             "say hello",
-            "fly sideways 5 meters"
+            "fly sideways 5 meters",
+
+            "Go to X, then go to Y, then go to Z, then retrace your steps back",
         ]
         run_queries(app, queries)
     elif choice == '2':

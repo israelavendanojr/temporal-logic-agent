@@ -18,14 +18,23 @@ class AgentState(TypedDict):
     """Represents the state of our agent."""
     messages: Annotated[Sequence[BaseMessage], operator.add]
     ltl_formula: str
+    conversation_log: list  # [(user_query, ltl_result), ...]
+    spatial_memory: dict   # {current_pos, start_pos, objects}
 
 # -----------------------------
 # LangGraph Node Functions
 # -----------------------------
 def translate_node(state: AgentState):
-    """Translates the user's query into an intermediate format."""
+    """Enhanced translation with memory context."""
     query = state['messages'][-1].content
-    ltl = translate_to_ltl.invoke(query)
+    
+    # Pass memory to translation
+    ltl = translate_to_ltl.invoke(
+        query, 
+        conversation_log=state.get('conversation_log', []),
+        spatial_memory=state.get('spatial_memory', {})
+    )
+    
     return {"messages": [HumanMessage(content=ltl)], "ltl_formula": ltl}
 
 def sanitize_node(state: AgentState):
@@ -51,6 +60,24 @@ def clarify_node(state: AgentState):
     query = state['messages'][0].content
     clarification_msg = ask_for_clarification.invoke(query)
     return {"messages": [HumanMessage(content=clarification_msg)]}
+
+def update_memory_node(state: AgentState):
+    """Update conversation log and spatial memory after successful translation."""
+    user_query = state['messages'][0].content
+    ltl_result = state['ltl_formula']
+    
+    # Update conversation log
+    current_log = state.get('conversation_log', [])
+    current_log.append((user_query, ltl_result))
+    
+    # Update spatial memory (basic position tracking)
+    spatial_memory = state.get('spatial_memory', {})
+    # Note: In real implementation, this would parse LTL to update current_position
+    
+    return {
+        "conversation_log": current_log,
+        "spatial_memory": spatial_memory
+    }
 
 def format_final_answer(state: AgentState):
     """Formats the final answer based on the feasibility and validation checks."""
@@ -94,6 +121,7 @@ def get_compiled_graph():
     workflow.add_node("validate", validate_node)
     workflow.add_node("check_feasibility", check_feasibility_node)
     workflow.add_node("clarify", clarify_node)
+    workflow.add_node("update_memory", update_memory_node)
     workflow.add_node("final_answer", format_final_answer)
 
     workflow.set_entry_point("translate")
@@ -114,8 +142,14 @@ def get_compiled_graph():
         "final_answer": "final_answer"
     })
     
-    # All final outputs from validation, feasibility, and clarification should go to a final answer or END
-    workflow.add_edge("check_feasibility", "final_answer")
+    # After feasibility check, update memory if feasible, otherwise go to final answer
+    workflow.add_conditional_edges("check_feasibility", lambda x: "update_memory" if x['messages'][-1].content == "FEASIBLE" else "final_answer", {
+        "update_memory": "update_memory",
+        "final_answer": "final_answer"
+    })
+    
+    # After memory update, go to final answer
+    workflow.add_edge("update_memory", "final_answer")
     workflow.add_edge("clarify", END)
     workflow.add_edge("final_answer", END)
 

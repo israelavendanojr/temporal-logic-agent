@@ -49,7 +49,7 @@ class GGUFModelWrapper:
             # Default parameters optimized for LTL translation
             default_params = {
                 "model_path": self.model_path,
-                "n_ctx": 256,  # Context length for short LTL outputs
+                "n_ctx": 2048,  # Context length for LTL outputs
                 "n_threads": None,  # Use all available CPU cores
                 "n_gpu_layers": 16,  
                 "verbose": False,
