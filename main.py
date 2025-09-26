@@ -1,7 +1,15 @@
 import argparse
+import logging
 from langchain_core.messages import HumanMessage
 from agent.core import get_compiled_graph
-from agent.tools import MOCK_CRAZYFLIE_LOCATION, MOCK_OBJECTS
+from agent.config_loader import get_config
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(name)s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 # Global debug flag
 DEBUG = False
@@ -10,16 +18,21 @@ DEBUG = False
 # Main Functions
 # -----------------------------
 def run_agent(app, query: str, session_state: dict = None):
-    """Run agent with persistent session state."""
+    """Run agent with config-driven session state."""
+    
+    config = get_config()
     
     # Initialize session state on first run
     if session_state is None:
+        drone_state = config.get_drone_state()
         session_state = {
             'conversation_log': [],
             'spatial_memory': {
-                'current_position': MOCK_CRAZYFLIE_LOCATION,
-                'start_position': MOCK_CRAZYFLIE_LOCATION,
-                'objects': MOCK_OBJECTS
+                'current_position': tuple(drone_state['start_position']),
+                'start_position': tuple(drone_state['start_position']),
+                'objects': config.get_waypoints(),
+                'flight_zone': config.get_flight_zone(),
+                'obstacles': config.get_obstacles()
             }
         }
     
@@ -50,13 +63,16 @@ def run_agent(app, query: str, session_state: dict = None):
 
 def run_queries(app, queries):
     """Run a list of queries through the agent."""
+    config = get_config()
+    drone_state = config.get_drone_state()
+    
     # Initialize session state for all queries
     session_state = {
         'conversation_log': [],
         'spatial_memory': {
-            'current_position': MOCK_CRAZYFLIE_LOCATION,
-            'start_position': MOCK_CRAZYFLIE_LOCATION,
-            'objects': MOCK_OBJECTS
+            'current_position': tuple(drone_state['start_position']),
+            'start_position': tuple(drone_state['start_position']),
+            'objects': config.get_waypoints()
         }
     }
     
@@ -70,13 +86,16 @@ def run_interact(app):
     """Interactive mode with persistent memory."""
     print("\nInteractive mode with memory - type 'quit' to exit")
     
+    config = get_config()
+    drone_state = config.get_drone_state()
+    
     # Initialize session memory
     session_state = {
         'conversation_log': [],
         'spatial_memory': {
-            'current_position': MOCK_CRAZYFLIE_LOCATION,
-            'start_position': MOCK_CRAZYFLIE_LOCATION,
-            'objects': MOCK_OBJECTS
+            'current_position': tuple(drone_state['start_position']),
+            'start_position': tuple(drone_state['start_position']),
+            'objects': config.get_waypoints()
         }
     }
     
@@ -110,33 +129,31 @@ def main():
     
     if choice == '1':
         queries = [
-            "Go to X, then go to Y, then go to Z, then retrace your steps back to the start",
-            # Test absolute movements with varied phrasing
-            "move to Y",
-            "head over to Z",
-            "fly to X",
+            # Test new waypoint system
+            "fly to waypoint_a",
+            "go to waypoint_b then waypoint_c", 
+            "patrol between waypoint_a and waypoint_b",
             
-            # Test waits with varied phrasing
-            "pause for 15 seconds",
-            "wait 5 seconds",
+            # Test enhanced LTL with safety
+            "hover at waypoint_a for 10 seconds",
+            "scan area_1 then return to base",
+            "fly above 2 meters to waypoint_b",
             
-            # Test relative movements with varied phrasing
-            "go forward 10 meters",
-            "go up 2 meters",
+            # Test safety constraints
+            "emergency return to start",
+            "land at landing_pad",
             
-            # Test complex, multi-step sequences
-            "go to X then wait 5 seconds then go to Z",
-            "fly up 10 meters, then fly to Y, then fly down 10 meters, then fly to Z",
-            "fly forward 10 meters, then back to the start",
+            # Test complex temporal logic
+            "always stay above 1 meter while going to waypoint_a",
+            "go to waypoint_b and scan area_1",
             
-            # Test edge cases from the prompt's negative examples
-            "find the treasure",
-            "fly to Mars",
-            "do a backflip",
-            "say hello",
-            "fly sideways 5 meters",
-
-            "Go to X, then go to Y, then go to Z, then retrace your steps back",
+            # Test error cases
+            "fly to unknown_location",
+            "fly below ground level",
+            
+            # Backward compatibility tests
+            "fly to X",  # Should still work via config
+            "go to Y then Z",
         ]
         run_queries(app, queries)
     elif choice == '2':

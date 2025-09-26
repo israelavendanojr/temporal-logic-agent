@@ -4,17 +4,23 @@ from typing import TypedDict, Annotated, Sequence
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from .model_server import get_gguf_model
+from .ltl.parser import LTLParser
+from .ltl.safety import SafetyConstraints
+from .config_loader import get_config
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# MOCK DATA for a stateful environment
-MOCK_OBJECTS = {
-    "X": (1, 2, 3),
-    "Y": (4, 5, 6),
-    "Z": (0, 0, 0)
-}
-MOCK_CRAZYFLIE_LOCATION = (-0.1, 0.2, 0.1)
+# Replace hardcoded mock data with config-driven data
+def get_environment_data():
+    """Get environment data from configuration"""
+    config = get_config()
+    return {
+        'waypoints': config.get_waypoints(),
+        'drone_position': tuple(config.get_drone_state()['start_position']),
+        'flight_zone': config.get_flight_zone(),
+        'obstacles': config.get_obstacles()
+    }
 
 @tool
 def translate_with_llm(natural_language_query: str) -> str:
@@ -41,97 +47,146 @@ def translate_with_llm(natural_language_query: str) -> str:
 
 @tool
 def translate_to_ltl(natural_language_query: str, conversation_log: list = None, spatial_memory: dict = None) -> str:
-    """Enhanced translation with full conversation context and spatial awareness."""
+    """Enhanced translation with automatic safety constraint injection."""
     
-    # Build context string for system prompt
+    env_data = get_environment_data()
+    waypoints = env_data['waypoints']
+    
+    # Build enhanced context
     context_parts = []
+    context_parts.append(f"Available waypoints: {list(waypoints.keys())}")
     
     if spatial_memory:
         context_parts.append(f"Current drone position: {spatial_memory.get('current_position')}")
-        context_parts.append(f"Start position: {spatial_memory.get('start_position')}")
-        context_parts.append(f"Object locations: {spatial_memory.get('objects')}")
+        context_parts.append(f"Flight zone: {env_data['flight_zone']}")
     
     if conversation_log:
         context_parts.append("Previous conversation:")
-        for user_q, ltl_result in conversation_log[-5:]:  # Last 5 exchanges
-            context_parts.append(f"User: {user_q}")
-            context_parts.append(f"LTL: {ltl_result}")
+        for user_q, ltl_result in conversation_log[-3:]:  # Last 3 exchanges
+            context_parts.append(f"User: {user_q}, LTL: {ltl_result}")
     
-    # Enhanced system prompt with full context
-    base_prompt = "You are a specialized translator that converts natural language drone commands into Linear Temporal Logic (LTL) formulas."
-    
-    if context_parts:
-        context_section = "\n\nContext:\n" + "\n".join(context_parts)
-        system_prompt = base_prompt + context_section + "\n\nFor complex multi-step queries, reason through the complete sequence. Respond only with the LTL formula."
-    else:
-        system_prompt = base_prompt + " Respond only with the LTL formula."
+    # Enhanced system prompt for new LTL grammar
+    base_prompt = """You are a specialized translator that converts natural language drone commands into Linear Temporal Logic (LTL) formulas.
 
-    response = get_gguf_model().invoke([
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=natural_language_query)
-    ])
-    
-    return response.content.strip()
+Available LTL operators:
+- F(φ) = eventually φ will be true
+- G(φ) = φ is always true  
+- X(φ) = φ is true in next step
+- φ & ψ = both φ and ψ are true
+- φ | ψ = either φ or ψ is true
+- !φ = φ is not true
+
+Available predicates and actions:
+- at(location): drone at specific location
+- near(location, radius): drone within radius of location
+- above(altitude): drone above altitude threshold
+- move_to(location): navigate to location
+- hover(duration): maintain position for seconds
+- scan(area): perform sensor sweep
+- emergency_return(): return to start position
+- land(): controlled landing
+
+Do not include safety constraints in your response - they will be added automatically.
+Respond only with the LTL formula."""
+
+    if context_parts:
+        system_prompt = base_prompt + "\n\nContext:\n" + "\n".join(context_parts)
+    else:
+        system_prompt = base_prompt
+
+    try:
+        response = get_gguf_model().invoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=natural_language_query)
+        ])
+        
+        base_ltl = response.content.strip()
+        
+        # Parse and inject safety constraints
+        parser = LTLParser()
+        is_valid, error_msg = parser.validate_syntax(base_ltl)
+        
+        if not is_valid:
+            logger.error(f"Invalid LTL syntax: {error_msg}")
+            return f"INVALID_SYNTAX: {error_msg}"
+        
+        # Inject safety constraints
+        safe_ltl = parser.inject_safety_constraints(base_ltl)
+        return safe_ltl
+        
+    except Exception as e:
+        logger.error(f"Translation error: {e}")
+        return "ERROR: Translation failed"
 
 @tool
 def sanitize_ltl_formula(ltl_formula: str) -> str:
-    """Cleans up and normalizes the LTL formula string for consistent validation."""
-    cleaned = ltl_formula.replace(" ", "")
-    cleaned = cleaned.replace("U", " U ")
-    return " ".join(cleaned.split())
+    """Enhanced LTL sanitization for new grammar."""
+    if ltl_formula.startswith("INVALID_SYNTAX:") or ltl_formula.startswith("ERROR:"):
+        return ltl_formula
+        
+    # Basic cleanup - normalize spacing around operators
+    cleaned = ltl_formula.replace(" & ", " & ").replace("&", " & ")
+    cleaned = cleaned.replace(" | ", " | ").replace("|", " | ")
+    cleaned = cleaned.replace(" U ", " U ").replace("U", " U ")
+    
+    # Remove extra whitespace
+    cleaned = " ".join(cleaned.split())
+    return cleaned
 
 @tool
 def validate_ltl_formula(ltl_formula: str) -> bool:
-    """
-    Verifies that an LTL formula is syntactically valid and grounded in the environment.
-    """
-    # Use a more robust approach with multiple regex patterns
-    
-    # Pattern for single LTL fragments
-    fragment_pattern = re.compile(
-        r"^(F\(at\((?:X|Y|Z|unknown)\)\)|"
-        r"move\((?:forward|backward|up|down),\d+\)|"
-        r"wait\(\d+\)|"
-        r"return_to_start\(\))$"
-    )
-    
-    # Pattern for sequences with 'U'
-    sequence_pattern = re.compile(
-        r"^(F\(at\((?:X|Y|Z|unknown)\)\s*U\s*)*"
-        r"(move\((?:forward|backward|up|down),\d+\)\s*U\s*)*"
-        r"(wait\(\d+\)\s*U\s*)*"
-        r"(return_to_start\(\))?$"
-    )
-    
-    # Check if the formula matches either a single fragment or a valid sequence
-    if fragment_pattern.match(ltl_formula):
-        return True
+    """Enhanced LTL validation using proper parser."""
+    # Handle error cases from translation
+    if ltl_formula.startswith("INVALID_SYNTAX:") or ltl_formula.startswith("ERROR:"):
+        return False
         
-    # Split the formula by the 'U' operator and check each part
-    parts = ltl_formula.split(' U ')
+    parser = LTLParser()
+    is_valid, error_msg = parser.validate_syntax(ltl_formula)
     
-    if len(parts) > 1:
-        for part in parts:
-            if not fragment_pattern.match(part):
-                return False
-        return True
-        
-    return False
+    if not is_valid:
+        logger.warning(f"LTL validation failed: {error_msg}")
+        return False
+    
+    # Check safety compliance
+    safety_valid, missing_constraints = SafetyConstraints.validate_mission_safety(ltl_formula)
+    if not safety_valid:
+        logger.warning(f"Missing safety constraints: {missing_constraints}")
+        # Note: Don't fail validation for missing safety constraints since they should be auto-injected
+        # This is just for logging/monitoring purposes
+    
+    return True
 
 @tool
 def check_feasibility(ltl_formula: str) -> str:
-    """Checks if the LTL formula is physically possible to execute."""
-    if "F(at(unknown))" in ltl_formula:
-        return "NOT FEASIBLE"
+    """Enhanced feasibility checking with config-driven environment."""
+    # Handle error cases from translation
+    if ltl_formula.startswith("INVALID_SYNTAX:"):
+        return "NOT FEASIBLE: Invalid LTL syntax"
+    if ltl_formula.startswith("ERROR:"):
+        return "NOT FEASIBLE: Translation error"
+        
+    env_data = get_environment_data()
+    waypoints = env_data['waypoints']
     
-    known_objects = MOCK_OBJECTS.keys()
+    # Check for unknown waypoints
+    waypoint_pattern = r"(?:at|near|move_to)\((\w+)"
+    referenced_waypoints = re.findall(waypoint_pattern, ltl_formula)
     
-    objects_in_formula = re.findall(r"at\((.*?)\)", ltl_formula)
+    for waypoint in referenced_waypoints:
+        if waypoint not in waypoints:
+            return f"NOT FEASIBLE: Unknown waypoint '{waypoint}'"
     
-    for obj in objects_in_formula:
-        if obj not in known_objects and obj != "unknown":
-            return "NOT FEASIBLE: Contains unknown objects."
-            
+    # Check altitude constraints
+    altitude_pattern = r"(?:above|below)\(([0-9.]+)\)"
+    altitudes = re.findall(altitude_pattern, ltl_formula)
+    config = get_config()
+    safety_params = config.get_safety_params()
+    
+    for alt in altitudes:
+        altitude = float(alt)
+        if altitude < safety_params['min_altitude'] or altitude > safety_params['max_altitude']:
+            return f"NOT FEASIBLE: Altitude {altitude}m outside safe range"
+    
     return "FEASIBLE"
 
 @tool

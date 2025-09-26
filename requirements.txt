@@ -2,3 +2,4 @@ langchain_core
 langchain_ollama
 langgraph
 llama-cpp-python
+PyYAML

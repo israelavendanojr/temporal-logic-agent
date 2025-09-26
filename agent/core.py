@@ -102,11 +102,15 @@ def router(state: AgentState) -> str:
     if last_message_content == "AMBIGUOUS_QUERY":
         return "clarify"
     
+    # Handle new error formats
+    if last_message_content.startswith("INVALID_SYNTAX:") or last_message_content.startswith("ERROR:"):
+        return "check_feasibility"
+        
     # Check for known logical fails before attempting validation
     if "F(at(unknown))" in last_message_content:
         return "check_feasibility"
         
-    # All other cases go to the new sanitize node
+    # All other cases go to sanitize node
     return "sanitize"
 
 # -----------------------------
@@ -154,3 +158,5 @@ def get_compiled_graph():
     workflow.add_edge("final_answer", END)
 
     return workflow.compile()
+
+    
