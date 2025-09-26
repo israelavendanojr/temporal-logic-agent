@@ -1,7 +1,10 @@
 """Fixed LTL Parser for syntax validation and safety injection"""
 import re
+import logging
 from typing import Tuple, Dict, List
 from .grammar import LTLGrammar
+
+logger = logging.getLogger(__name__)
 
 class LTLParser:
     """Parse and validate LTL formulas with safety constraint injection"""
@@ -10,41 +13,64 @@ class LTLParser:
         self.grammar = LTLGrammar()
         
     def tokenize(self, formula: str) -> List[str]:
-        """Improved tokenization that handles complex formulas correctly"""
-        # Remove all spaces first
-        clean_formula = formula.replace(' ', '')
+        """Fixed tokenization that properly handles LTL formulas"""
+        if not formula:
+            return []
         
-        # Tokenize with proper precedence handling
-        # First pass: Handle predicates/actions with parentheses
-        predicate_pattern = r'\w+\([^)]*\)'
-        predicates = re.findall(predicate_pattern, clean_formula)
+        # Clean the formula
+        clean_formula = formula.strip()
         
-        # Replace predicates with placeholders to avoid interference
-        temp_formula = clean_formula
-        predicate_map = {}
-        for i, pred in enumerate(predicates):
-            placeholder = f"PRED{i}"
-            predicate_map[placeholder] = pred
-            temp_formula = temp_formula.replace(pred, placeholder, 1)
-        
-        # Second pass: Split on operators while preserving them
-        operator_pattern = r'([FGX!&|()])'
-        parts = re.split(operator_pattern, temp_formula)
-        
-        # Clean up and restore predicates
+        # More sophisticated tokenizer for LTL formulas
         tokens = []
-        for part in parts:
-            if part and part.strip():
-                if part in predicate_map:
-                    tokens.append(predicate_map[part])
-                elif part != '':
-                    tokens.append(part)
+        i = 0
         
-        # Filter out empty tokens
+        while i < len(clean_formula):
+            char = clean_formula[i]
+            
+            # Skip whitespace
+            if char.isspace():
+                i += 1
+                continue
+            
+            # Handle operators and parentheses
+            if char in 'FGX!&|()+':
+                tokens.append(char)
+                i += 1
+                continue
+            
+            # Handle word tokens (predicates/actions starting with letters)
+            if char.isalpha() or char == '_':
+                start = i
+                while i < len(clean_formula) and (clean_formula[i].isalnum() or clean_formula[i] == '_'):
+                    i += 1
+                
+                if i < len(clean_formula) and clean_formula[i] == '(':
+                    # This is a predicate/action - capture the whole thing including parameters in parens
+                    while i < len(clean_formula) and clean_formula[i] != ')':
+                        i += 1
+                    if i < len(clean_formula):
+                        i += 1  # Include closing paren
+                
+                tokens.append(clean_formula[start:i])
+                continue
+            
+            # Any other character (numbers, etc.) should be part of parameters
+            if char.isdigit() or char == '.' or char == '-' or char == ',':
+                start = i
+                while (i < len(clean_formula) and 
+                       (clean_formula[i].isalnum() or clean_formula[i] in '.,-')):
+                    i += 1
+                tokens.append(clean_formula[start:i])
+                continue
+                
+            # Skip unrecognized characters
+            i += 1
+        
+        # Clean up tokens - filter empty ones
         return [token for token in tokens if token.strip()]
         
     def validate_syntax(self, formula: str) -> Tuple[bool, str]:
-        """Enhanced syntax validation with better error reporting"""
+        """Enhanced syntax validation with corrected logic flow"""
         if not formula or formula.strip() == "":
             return False, "Empty formula"
             
@@ -54,13 +80,31 @@ class LTLParser:
             
         try:
             tokens = self.tokenize(formula)
+            logger.debug(f"Tokenized formula '{formula}' into: {tokens}")
             
-            for token in tokens:
-                if token in ['(', ')', '&', '|', '!']:
+            i = 0
+            while i < len(tokens):
+                token = tokens[i]
+                
+                # Skip parentheses
+                if token in ['(', ')']:
+                    i += 1
                     continue
+                    
+                # Handle temporal operators
                 elif token in self.grammar.TEMPORAL_OPS:
+                    # For F, G, X - expect opening parenthesis next
+                    if token in ['F', 'G', 'X']:
+                        if i + 1 >= len(tokens) or tokens[i + 1] != '(':
+                            return False, f"Temporal operator {token} must be followed by parentheses"
+                    # For binary operators &, |, U - just continue
+                    elif token in ['&', '|', 'U', '!']:
+                        pass
+                    i += 1
                     continue
-                elif '(' in token and ')' in token:  # Predicate or action
+                    
+                # Handle predicates and actions
+                elif '(' in token and ')' in token:
                     pred_name = token.split('(')[0]
                     if pred_name not in self.grammar.get_all_predicates():
                         return False, f"Unknown predicate: {pred_name}"
@@ -69,15 +113,22 @@ class LTLParser:
                     param_str = token[token.find('(')+1:token.rfind(')')]
                     if not self._validate_predicate_params(pred_name, param_str):
                         return False, f"Invalid parameters for {pred_name}: {param_str}"
-                        
-                elif token.isalnum():  # Simple token
+                    i += 1
                     continue
+                    
+                # Handle simple tokens (should be rare in proper LTL)
+                elif token.replace('_', '').replace('-', '').isalnum():
+                    # Allow simple alphanumeric tokens (waypoint names, etc.)
+                    i += 1
+                    continue
+                    
                 else:
                     return False, f"Invalid token: {token}"
                     
             return True, "Valid syntax"
             
         except Exception as e:
+            logger.error(f"Parser exception for formula '{formula}': {str(e)}")
             return False, f"Parsing error: {str(e)}"
     
     def _validate_predicate_params(self, pred_name: str, param_str: str) -> bool:

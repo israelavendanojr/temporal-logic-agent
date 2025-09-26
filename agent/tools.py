@@ -31,11 +31,14 @@ def translate_with_llm(natural_language_query: str) -> str:
         logger.error(f"Failed to load GGUF model: {e}")
         return "ERROR: Model not available"
 
-    known_objects = ", ".join(MOCK_OBJECTS.keys())
+    # Get known objects from config instead of hardcoded values
+    env_data = get_environment_data()
+    known_objects = ", ".join(env_data['waypoints'].keys())
     
     # Updated system prompt to match the fine-tuned model's training format
     system_prompt = (
-        "You are a specialized translator that converts natural language drone commands into Linear Temporal Logic (LTL) formulas. "
+        f"You are a specialized translator that converts natural language drone commands into Linear Temporal Logic (LTL) formulas. "
+        f"Available waypoints: {known_objects}. "
         "Respond only with the LTL formula."
     )
 
