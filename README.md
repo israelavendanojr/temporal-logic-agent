@@ -1,25 +1,29 @@
 # UAV Task Planner Agent
 
-An AI agent that translates NLP to LTL for a Crazyflie drone.
+An intelligent agent that translates natural language commands into Linear Temporal Logic (LTL) formulas for autonomous drone mission planning. The system uses a fine-tuned language model to understand human instructions and convert them into formal temporal logic expressions that can be safely executed by the Crazyflie 2.0 UAV.
 
-* **Natural Language Processing (NLP)**: The AI's ability to understand your English commands, such as "fly to X" or "wait 5 seconds."
-* **Linear Temporal Logic (LTL)**: A formal language used to define drone missions. For example, the command `F(at(Y))` means "Eventually, be at location Y."
+## Project Overview
 
------
+**Key Technologies:**
+- **Python 3.12** - Core programming language
+- **LangGraph & LangChain** - Multi-agent workflow orchestration and LLM integration
+- **GGUF/llama-cpp-python** - Local language model inference for LTL translation
+- **Linear Temporal Logic (LTL)** - Formal specification language for temporal behaviors
+- **PyYAML** - Configuration management for environment and safety parameters
 
-## Usage
+## Directory Overview
 
-This project uses **Ollama** to run a local large language model.
+The project follows a clean layered architecture pattern with clear separation of concerns between domain logic, business services, and application integration. The structure separates core business concepts from infrastructure concerns, making the system highly testable and maintainable.
 
-### Ollama Setup
-
-1.  **Install Ollama**: Download and install Ollama from `ollama.ai`.
-2.  **Pull the Model**: Open your terminal and download the required model with the command: `ollama pull llama3.2`.
-
-### Running the Agent
-
-1.  Ensure your Ollama server is running and the `llama3.2` model is available.
-2.  Open your terminal, navigate to the project directory, and run the main script.
-    ```bash
-    python main.py
-    ```
+**Structure:**
+- **`/agent/`** - Core LangGraph workflow orchestration and legacy tool implementations
+  - Contains the main state machine (`core.py`), model server integration (`model_server.py`), and LTL processing modules (`ltl/`)
+- **`/domain/`** - Immutable business domain models representing core concepts
+  - Defines `LTLFormula` and `MissionContext` as value objects with validation states
+- **`/services/`** - Business logic services for translation, validation, and feasibility checking
+  - Implements the core workflow: NLP→LTL translation, syntax validation, safety injection, and mission feasibility
+- **`/application/`** - Integration layer connecting services with LangChain tools and dependency injection
+  - Provides factory pattern for service creation and context builders for session state management
+- **`/config/`** - Environment configuration including flight zones, waypoints, obstacles, and safety parameters
+- **`/models/`** - Fine-tuned GGUF model for LTL translation and training dataset
+- **`/main.py`** - Application entry point with CLI interface for interactive and batch processing modes
