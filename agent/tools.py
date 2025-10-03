@@ -11,7 +11,6 @@ from .config_loader import get_config
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# Replace hardcoded mock data with config-driven data
 def get_environment_data():
     """Get environment data from configuration"""
     config = get_config()

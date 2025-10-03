@@ -1,267 +1,289 @@
-{"instruction": "fly to waypoint_a", "output": "F(at(waypoint_a))"}
-{"instruction": "go to waypoint_b", "output": "F(at(waypoint_b))"}
-{"instruction": "navigate to waypoint_c", "output": "F(at(waypoint_c))"}
-{"instruction": "proceed to landing_pad", "output": "F(at(landing_pad))"}
-{"instruction": "move to waypoint_a", "output": "F(at(waypoint_a))"}
-{"instruction": "head to waypoint_b", "output": "F(at(waypoint_b))"}
-{"instruction": "travel to waypoint_c", "output": "F(at(waypoint_c))"}
-{"instruction": "approach landing_pad", "output": "F(at(landing_pad))"}
-
-{"instruction": "hover at waypoint_a for 10 seconds", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & hover(10))"}
-{"instruction": "wait at waypoint_b for 5 seconds", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & hover(5))"}
-{"instruction": "hover for 30 seconds at waypoint_c", "output": "F(at(waypoint_c)) & F(F(at(waypoint_c)) & hover(30))"}
-{"instruction": "pause at landing_pad for 15 seconds", "output": "F(at(landing_pad)) & F(F(at(landing_pad)) & hover(15))"}
-
-{"instruction": "fly above 2 meters", "output": "F(above(2.0))"}
-{"instruction": "maintain altitude above 1.5 meters", "output": "G(above(1.5))"}
-{"instruction": "stay above 1 meter altitude", "output": "G(above(1.0))"}
-{"instruction": "climb above 2.5 meters", "output": "F(above(2.5))"}
-{"instruction": "always stay above 0.5 meters", "output": "G(above(0.5))"}
-
-{"instruction": "scan area_1", "output": "F(scan(area_1))"}
-{"instruction": "perform scan of area_1", "output": "F(scan(area_1))"}
-{"instruction": "inspect area_1", "output": "F(scan(area_1))"}
-{"instruction": "survey area_1", "output": "F(scan(area_1))"}
-
-{"instruction": "land at landing_pad", "output": "F(at(landing_pad)) & F(land())"}
-{"instruction": "perform emergency return", "output": "F(emergency_return())"}
-{"instruction": "return to base immediately", "output": "F(emergency_return())"}
-{"instruction": "emergency landing", "output": "F(land())"}
-
-{"instruction": "go to waypoint_a then waypoint_b", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(waypoint_b)))"}
-{"instruction": "fly to waypoint_b then waypoint_c", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(waypoint_c)))"}
-{"instruction": "visit waypoint_a then return to landing_pad", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(landing_pad)))"}
-{"instruction": "go to waypoint_c then waypoint_a", "output": "F(at(waypoint_c)) & F(F(at(waypoint_c)) & F(at(waypoint_a)))"}
-
-{"instruction": "first go to waypoint_a, then hover for 10 seconds, then continue to waypoint_b", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & hover(10) & F(F(hover(10)) & F(at(waypoint_b))))"}
-{"instruction": "visit waypoint_b, wait 5 seconds, then proceed to waypoint_c", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & hover(5) & F(F(hover(5)) & F(at(waypoint_c))))"}
-{"instruction": "go to waypoint_c, hover for 15 seconds, then return to base", "output": "F(at(waypoint_c)) & F(F(at(waypoint_c)) & hover(15) & F(F(hover(15)) & F(at(landing_pad))))"}
-
-{"instruction": "always maintain altitude above 1 meter while going to waypoint_a", "output": "G(above(1.0)) & F(at(waypoint_a))"}
-{"instruction": "stay above 2 meters until reaching waypoint_b", "output": "above(2.0) U at(waypoint_b)"}
-{"instruction": "keep altitude above 1.5 meters while moving to waypoint_c", "output": "G(above(1.5)) & F(at(waypoint_c))"}
-{"instruction": "maintain minimum 0.8 meter altitude until at landing_pad", "output": "above(0.8) U at(landing_pad)"}
-
-{"instruction": "patrol between waypoint_a and waypoint_b", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b)))"}
-{"instruction": "alternate between waypoint_b and waypoint_c", "output": "G(F(at(waypoint_b)) & F(at(waypoint_c)))"}
-{"instruction": "continuously patrol waypoint_a to waypoint_c", "output": "G(F(at(waypoint_a)) & F(at(waypoint_c)))"}
-{"instruction": "keep patrolling between landing_pad and waypoint_a", "output": "G(F(at(landing_pad)) & F(at(waypoint_a)))"}
-
-{"instruction": "go to waypoint_a and scan area_1", "output": "F(at(waypoint_a)) & F(scan(area_1))"}
-{"instruction": "visit waypoint_b then scan area_1", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(scan(area_1)))"}
-{"instruction": "scan area_1 then return to landing_pad", "output": "F(scan(area_1)) & F(F(scan(area_1)) & F(at(landing_pad)))"}
-{"instruction": "fly to waypoint_c and perform area scan", "output": "F(at(waypoint_c)) & F(scan(area_1))"}
-
-{"instruction": "circle around waypoint_a maintaining 2 meter distance", "output": "G(near(waypoint_a, 2.0))"}
-{"instruction": "stay within 1.5 meters of waypoint_b", "output": "G(near(waypoint_b, 1.5))"}
-{"instruction": "maintain 3 meter radius around waypoint_c", "output": "G(near(waypoint_c, 3.0))"}
-{"instruction": "orbit waypoint_a at 1 meter distance", "output": "G(near(waypoint_a, 1.0))"}
-
-{"instruction": "if battery drops below 30%, return to base immediately", "output": "G(battery_level(30) -> F(at(landing_pad)))"}
-{"instruction": "when battery reaches 25%, perform emergency return", "output": "G(battery_level(25) -> F(emergency_return()))"}
-{"instruction": "emergency land if battery below 15%", "output": "G(battery_level(15) -> F(land()))"}
-{"instruction": "return home when battery hits 20%", "output": "G(battery_level(20) -> F(at(landing_pad)))"}
-
-{"instruction": "visit all waypoints then return home", "output": "F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c)) & F(F(at(waypoint_c)) & F(at(landing_pad)))"}
-{"instruction": "tour waypoint_a, waypoint_b, waypoint_c in sequence", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(waypoint_b))) & F(F(at(waypoint_b)) & F(at(waypoint_c)))"}
-{"instruction": "sequential visit: waypoint_b, waypoint_c, then waypoint_a", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(waypoint_c))) & F(F(at(waypoint_c)) & F(at(waypoint_a)))"}
-
-{"instruction": "search pattern: scan area_1 then if target found, hover and signal", "output": "F(scan(area_1)) & G(target_detected() -> hover(30))"}
-{"instruction": "systematic area scan then return to base", "output": "F(scan(area_1)) & F(F(scan(area_1)) & F(at(landing_pad)))"}
-{"instruction": "perform surveillance sweep of area_1", "output": "F(scan(area_1))"}
-
-{"instruction": "only scan area_1 if altitude is above 2 meters", "output": "G(scan(area_1) -> above(2.0))"}
-{"instruction": "scan area_1 only when above 1.5 meters", "output": "G(scan(area_1) -> above(1.5))"}
-{"instruction": "conditional scan: area_1 if above safe altitude", "output": "G(scan(area_1) -> above(1.0))"}
-
-{"instruction": "approach waypoint_a from above 2 meters", "output": "F(above(2.0) & near(waypoint_a, 1.0)) & F(F(above(2.0) & near(waypoint_a, 1.0)) & F(at(waypoint_a)))"}
-{"instruction": "descend to waypoint_b from high altitude", "output": "F(above(2.5)) & F(F(above(2.5)) & F(at(waypoint_b)))"}
-{"instruction": "high approach to waypoint_c then land", "output": "F(above(2.0) & near(waypoint_c, 1.0)) & F(F(above(2.0) & near(waypoint_c, 1.0)) & F(at(waypoint_c)) & F(land()))"}
-
-{"instruction": "go to waypoint_a, then return to it after visiting waypoint_b", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(waypoint_a))))"}
-{"instruction": "visit waypoint_b, then go elsewhere, then come back to waypoint_b", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(waypoint_c)) & F(F(at(waypoint_c)) & F(at(waypoint_b))))"}
-{"instruction": "round trip: waypoint_a to waypoint_c and back", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(waypoint_c)) & F(F(at(waypoint_c)) & F(at(waypoint_a))))"}
-
-{"instruction": "check out area_1", "output": "F(near(area_1, 1.0)) & F(scan(area_1))"}
-{"instruction": "inspect the area around waypoint_a", "output": "F(near(waypoint_a, 2.0)) & F(scan(area_1))"}
-{"instruction": "investigate area_1 thoroughly", "output": "F(scan(area_1)) & G(near(area_1, 2.0))"}
-{"instruction": "make sure everything is clear around waypoint_b", "output": "F(near(waypoint_b, 2.0)) & F(scan(area_1))"}
-
-{"instruction": "do a quick flyby of waypoint_a", "output": "F(at(waypoint_a)) & F(X(!at(waypoint_a)))"}
-{"instruction": "brief visit to waypoint_b", "output": "F(at(waypoint_b)) & F(X(!at(waypoint_b)))"}
-{"instruction": "touch and go at waypoint_c", "output": "F(at(waypoint_c)) & F(X(!at(waypoint_c)))"}
-
-{"instruction": "stay within the flight zone no matter what", "output": "G(in_bounds())"}
-{"instruction": "never fly below minimum safe altitude", "output": "G(above(0.3))"}
-{"instruction": "always maintain clearance from obstacles", "output": "G(clear_of(obstacles))"}
-{"instruction": "remain within designated area at all times", "output": "G(in_bounds())"}
-
-{"instruction": "if sensors detect obstacle, immediately climb to safe altitude", "output": "G(obstacle_detected() -> F(above(3.0)))"}
-{"instruction": "climb if obstacle detected nearby", "output": "G(obstacle_detected() -> F(above(2.5)))"}
-{"instruction": "emergency altitude gain on obstacle detection", "output": "G(obstacle_detected() -> F(above(3.0)))"}
-
-{"instruction": "return to base if communication is lost", "output": "G(!communication() -> F(at(landing_pad)))"}
-{"instruction": "emergency return on communication failure", "output": "G(!communication() -> F(emergency_return()))"}
-{"instruction": "go home if signal lost", "output": "G(!communication() -> F(at(landing_pad)))"}
-
-{"instruction": "never move but visit all waypoints", "output": "INVALID_SYNTAX: Contradictory requirements"}
-{"instruction": "always stay at waypoint_a and always stay at waypoint_b", "output": "INVALID_SYNTAX: Contradictory spatial requirements"}
-{"instruction": "be stationary while moving to waypoint_c", "output": "INVALID_SYNTAX: Contradictory motion requirements"}
-
-{"instruction": "fly to unknown_waypoint_xyz", "output": "INVALID_SYNTAX: Unknown waypoint"}
-{"instruction": "go to nonexistent_location", "output": "INVALID_SYNTAX: Unknown waypoint"}
-{"instruction": "navigate to mystery_point", "output": "INVALID_SYNTAX: Unknown waypoint"}
-{"instruction": "fly to the moon", "output": "INVALID_SYNTAX: Unknown waypoint"}
-
-{"instruction": "fly underground to waypoint_a", "output": "INVALID_SYNTAX: Altitude constraint violation"}
-{"instruction": "maintain altitude below ground level", "output": "INVALID_SYNTAX: Safety constraint violation"}
-{"instruction": "fly below 0 meters", "output": "INVALID_SYNTAX: Altitude constraint violation"}
-{"instruction": "descend to -5 meters", "output": "INVALID_SYNTAX: Altitude constraint violation"}
-
-{"instruction": "find my keys", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "do a barrel roll", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "fly sideways", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "turn left 90 degrees", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "rotate around", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "go right", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "fly forward a bit", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "move up a little", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "wait for a while", "output": "AMBIGUOUS_QUERY"}
-
-{"instruction": "continuously patrol all waypoints", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c)))"}
-{"instruction": "infinite loop through waypoint_a, waypoint_b, waypoint_c", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c)))"}
-{"instruction": "perpetual surveillance tour", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c)) & F(at(landing_pad)))"}
-
-{"instruction": "eventually visit all waypoints but always return to base between visits", "output": "F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c)) & G((at(waypoint_a) | at(waypoint_b) | at(waypoint_c)) -> F(at(landing_pad)))"}
-{"instruction": "visit each waypoint with base return between", "output": "F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c)) & G((at(waypoint_a) | at(waypoint_b) | at(waypoint_c)) -> F(at(landing_pad)))"}
-
-{"instruction": "alternate between waypoint_a and waypoint_b every 30 seconds", "output": "G(at(waypoint_a) -> F(hover(30) & F(at(waypoint_b)))) & G(at(waypoint_b) -> F(hover(30) & F(at(waypoint_a))))"}
-{"instruction": "30-second intervals between waypoint_a and waypoint_b", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b))) & G(at(waypoint_a) -> F(hover(30))) & G(at(waypoint_b) -> F(hover(30)))"}
-
-{"instruction": "go to waypoint_a and hover there indefinitely", "output": "F(at(waypoint_a)) & G(F(at(waypoint_a)) -> stationary())"}
-{"instruction": "reach waypoint_b and maintain position", "output": "F(at(waypoint_b)) & G(F(at(waypoint_b)) -> stationary())"}
-{"instruction": "stay at waypoint_c forever", "output": "F(at(waypoint_c)) & G(at(waypoint_c))"}
-
-{"instruction": "go to area_1 center and perform detailed scan", "output": "F(at(area_1)) & F(F(at(area_1)) & scan(area_1))"}
-{"instruction": "systematic grid scan of area_1", "output": "F(scan(area_1))"}
-{"instruction": "comprehensive area_1 survey", "output": "F(scan(area_1)) & G(near(area_1, 1.0))"}
-
-{"instruction": "safe route to waypoint_a avoiding obstacles", "output": "F(at(waypoint_a)) & G(clear_of(obstacles))"}
-{"instruction": "obstacle-free path to waypoint_b", "output": "F(at(waypoint_b)) & G(clear_of(obstacles))"}
-{"instruction": "navigate to waypoint_c safely", "output": "F(at(waypoint_c)) & G(clear_of(obstacles))"}
-
-{"instruction": "emergency protocol: land immediately", "output": "F(land())"}
-{"instruction": "execute emergency landing procedure", "output": "F(land())"}
-{"instruction": "immediate controlled descent", "output": "F(land())"}
-{"instruction": "abort mission and return to base", "output": "F(at(landing_pad))"}
-
-{"instruction": "if moving, always stay above 0.5 meters", "output": "G(moving() -> above(0.5))"}
-{"instruction": "maintain altitude while in motion", "output": "G(moving() -> above(1.0))"}
-{"instruction": "never descend below 1 meter when moving", "output": "G(moving() -> above(1.0))"}
-
-{"instruction": "hover at current position for 20 seconds", "output": "hover(20)"}
-{"instruction": "maintain current position for 10 seconds", "output": "hover(10)"}
-{"instruction": "stationary hold for 30 seconds", "output": "hover(30)"}
-{"instruction": "pause flight for 15 seconds", "output": "hover(15)"}
-
-{"instruction": "scan area_1 from multiple angles", "output": "F(scan(area_1)) & F(near(area_1, 2.0))"}
-{"instruction": "comprehensive area_1 inspection", "output": "F(scan(area_1)) & G(near(area_1, 1.5))"}
-{"instruction": "detailed survey of area_1 perimeter", "output": "F(scan(area_1)) & G(near(area_1, 2.0))"}
-
-{"instruction": "establish waypoint_a as base of operations", "output": "F(at(waypoint_a)) & G(F(at(waypoint_a)))"}
-{"instruction": "use waypoint_b as staging area", "output": "F(at(waypoint_b)) & G(F(at(waypoint_b)))"}
-{"instruction": "make waypoint_c the primary location", "output": "F(at(waypoint_c)) & G(F(at(waypoint_c)))"}
-
-{"instruction": "go to the closest waypoint", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "visit the nearest location", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "fly to the farthest waypoint", "output": "AMBIGUOUS_QUERY"}
-{"instruction": "head to the other waypoint", "output": "AMBIGUOUS_QUERY"}
-
-{"instruction": "return to where we started", "output": "F(at(landing_pad))"}
-{"instruction": "go back to the beginning", "output": "F(at(landing_pad))"}
-{"instruction": "return to origin", "output": "F(at(landing_pad))"}
-{"instruction": "go home", "output": "F(at(landing_pad))"}
-
-{"instruction": "waypoint_a to waypoint_b direct route", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(waypoint_b)))"}
-{"instruction": "straight line from waypoint_b to waypoint_c", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(waypoint_c)))"}
-{"instruction": "direct flight waypoint_c to landing_pad", "output": "F(at(waypoint_c)) & F(F(at(waypoint_c)) & F(at(landing_pad)))"}
-
-{"instruction": "spiral search pattern around waypoint_a", "output": "G(near(waypoint_a, 1.0)) & F(scan(area_1))"}
-{"instruction": "circular reconnaissance around waypoint_b", "output": "G(near(waypoint_b, 2.0)) & F(scan(area_1))"}
-{"instruction": "orbital survey of waypoint_c", "output": "G(near(waypoint_c, 1.5)) & F(scan(area_1))"}
-
-{"instruction": "maintain safe distance from all obstacles", "output": "G(clear_of(obstacles))"}
-{"instruction": "avoid all no-fly zones", "output": "G(in_bounds())"}
-{"instruction": "respect all airspace restrictions", "output": "G(in_bounds())"}
-
-{"instruction": "prioritize safety over mission completion", "output": "G(above(0.3)) & G(in_bounds()) & G(clear_of(obstacles))"}
-{"instruction": "safety first protocol", "output": "G(above(0.3)) & G(in_bounds()) & G(clear_of(obstacles))"}
-{"instruction": "execute with maximum safety margins", "output": "G(above(1.0)) & G(in_bounds()) & G(clear_of(obstacles))"}
-
-{"instruction": "perform pre-flight safety check", "output": "G(above(0.3)) & G(in_bounds()) & G(clear_of(obstacles))"}
-{"instruction": "verify all systems before mission", "output": "G(battery_level(20) -> F(at(landing_pad)))"}
-{"instruction": "confirm operational parameters", "output": "G(above(0.3)) & G(in_bounds())"}
-
-{"instruction": "adaptive route to waypoint_a based on conditions", "output": "F(at(waypoint_a)) & G(clear_of(obstacles))"}
-{"instruction": "dynamic path planning to waypoint_b", "output": "F(at(waypoint_b)) & G(clear_of(obstacles))"}
-{"instruction": "flexible approach to waypoint_c", "output": "F(at(waypoint_c)) & G(clear_of(obstacles))"}
-
-{"instruction": "contingency plan: return if weather deteriorates", "output": "G(weather_bad() -> F(at(landing_pad)))"}
-{"instruction": "abort on adverse conditions", "output": "G(emergency_condition() -> F(at(landing_pad)))"}
-{"instruction": "weather-dependent mission execution", "output": "G(weather_bad() -> F(at(landing_pad)))"}
-
-{"instruction": "multi-stage mission: waypoint_a, scan, waypoint_b, return", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(scan(area_1)) & F(F(scan(area_1)) & F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(landing_pad)))))"}
-{"instruction": "complex sequence: waypoint_b, hover, scan, waypoint_c, return", "output": "F(at(waypoint_b)) & F(F(at(waypoint_b)) & hover(10) & F(F(hover(10)) & F(scan(area_1)) & F(F(scan(area_1)) & F(at(waypoint_c)) & F(F(at(waypoint_c)) & F(at(landing_pad))))))"}
-
-{"instruction": "if at waypoint_a then scan area_1", "output": "G(at(waypoint_a) -> F(scan(area_1)))"}
-{"instruction": "scan area_1 only when at waypoint_b", "output": "G(scan(area_1) -> at(waypoint_b))"}
-{"instruction": "conditional scanning based on position", "output": "G(at(waypoint_c) -> F(scan(area_1)))"}
-
-{"instruction": "until battery below 25%, continue patrol", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b))) U battery_level(25)"}
-{"instruction": "patrol until low battery warning", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c))) U battery_level(20)"}
-{"instruction": "mission continues until battery critical", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b))) U battery_level(15)"}
-
-{"instruction": "maximum altitude 3 meters during mission", "output": "G(!above(3.0))"}
-{"instruction": "never exceed 2.5 meter ceiling", "output": "G(!above(2.5))"}
-{"instruction": "altitude limit 2 meters for safety", "output": "G(!above(2.0))"}
-{"instruction": "stay below 3 meter altitude ceiling", "output": "G(!above(3.0))"}
-
-{"instruction": "backward compatibility: fly to X", "output": "F(at(X))"}
-{"instruction": "backward compatibility: go to Y then Z", "output": "F(at(Y)) & F(F(at(Y)) & F(at(Z)))"}
-{"instruction": "legacy command: visit Z", "output": "F(at(Z))"}
-{"instruction": "old format: navigate to X", "output": "F(at(X))"}
-
-{"instruction": "precision landing at landing_pad", "output": "F(at(landing_pad)) & F(land())"}
-{"instruction": "controlled descent to landing_pad", "output": "F(at(landing_pad)) & F(land())"}
-{"instruction": "soft landing procedure", "output": "F(land())"}
-{"instruction": "gentle touchdown at base", "output": "F(at(landing_pad)) & F(land())"}
-
-{"instruction": "verify waypoint_a is reachable", "output": "F(at(waypoint_a))"}
-{"instruction": "confirm access to waypoint_b", "output": "F(at(waypoint_b))"}
-{"instruction": "test route to waypoint_c", "output": "F(at(waypoint_c))"}
-{"instruction": "validate path to landing_pad", "output": "F(at(landing_pad))"}
-
-{"instruction": "energy-efficient route to waypoint_a", "output": "F(at(waypoint_a))"}
-{"instruction": "optimal path to waypoint_b", "output": "F(at(waypoint_b))"}
-{"instruction": "shortest route to waypoint_c", "output": "F(at(waypoint_c))"}
-{"instruction": "direct course to landing_pad", "output": "F(at(landing_pad))"}
-
-{"instruction": "establish communication before proceeding", "output": "G(communication() -> F(at(waypoint_a)))"}
-{"instruction": "maintain contact during mission", "output": "G(communication())"}
-{"instruction": "verify signal strength before flight", "output": "G(communication())"}
-
-{"instruction": "automated waypoint sequence", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(waypoint_c))))"}
-{"instruction": "autonomous patrol mission", "output": "G(F(at(waypoint_a)) & F(at(waypoint_b)) & F(at(waypoint_c)))"}
-{"instruction": "self-guided navigation sequence", "output": "F(at(waypoint_a)) & F(F(at(waypoint_a)) & F(at(waypoint_b)) & F(F(at(waypoint_b)) & F(at(waypoint_c))))"}
-
-{"instruction": "real-time obstacle avoidance", "output": "G(clear_of(obstacles))"}
-{"instruction": "dynamic obstacle detection", "output": "G(clear_of(obstacles))"}
-{"instruction": "adaptive collision avoidance", "output": "G(clear_of(obstacles))"}
-
-{"instruction": "mission abort sequence", "output": "F(at(landing_pad))"}
-{"instruction": "emergency mission termination", "output": "F(emergency_return())"}
-{"instruction": "immediate mission cancellation", "output": "F(at(landing_pad))"}
-
-{"instruction": "system health monitoring during flight", "output": "G(battery_level(20) -> F(at(landing_pad)))"}
-{"instruction": "continuous status assessment", "output": "G(battery_level(25) -> F(emergency_return()))"}
-{"instruction": "automated health checks", "output": "G(battery_level(15) -> F(land()))"}
+{"instruction": "fly to waypoint_1", "output": "F(at(waypoint_1))"}
+{"instruction": "proceed to wp_2", "output": "F(at(wp_2))"}
+{"instruction": "navigate to waypoint_3", "output": "F(at(waypoint_3))"}
+{"instruction": "move to base_station", "output": "F(at(base_station))"}
+{"instruction": "go directly to zone_A", "output": "F(at(zone_A))"}
+{"instruction": "head immediately to the pad", "output": "F(at(landing_pad))"}
+{"instruction": "begin flight to waypoint_1", "output": "F(at(waypoint_1))"}
+{"instruction": "continue to wp_2", "output": "F(at(wp_2))"}
+{"instruction": "fly towards waypoint_3", "output": "F(at(waypoint_3))"}
+{"instruction": "make way to base_station", "output": "F(at(base_station))"}
+{"instruction": "take off and fly to zone_A", "output": "F(at(zone_A))"}
+{"instruction": "fly to waypoint_1 now", "output": "F(at(waypoint_1))"}
+{"instruction": "start movement to wp_2", "output": "F(at(wp_2))"}
+{"instruction": "redirect to waypoint_3", "output": "F(at(waypoint_3))"}
+{"instruction": "return to base_station", "output": "F(at(base_station))"}
+{"instruction": "set course for zone_A", "output": "F(at(zone_A))"}
+{"instruction": "execute landing at landing_pad", "output": "F(land())"}
+{"instruction": "start landing process", "output": "F(land())"}
+{"instruction": "perform a controlled descent", "output": "F(land())"}
+{"instruction": "simple descent", "output": "F(land())"}
+{"instruction": "scan area_A", "output": "F(scan(area_A))"}
+{"instruction": "perform sensor sweep on zone_1", "output": "F(scan(zone_1))"}
+{"instruction": "inspect the perimeter_B", "output": "F(scan(perimeter_B))"}
+{"instruction": "run a full scan of area_B", "output": "F(scan(area_B))"}
+{"instruction": "survey zone_2", "output": "F(scan(zone_2))"}
+{"instruction": "check site_C with sensors", "output": "F(scan(site_C))"}
+{"instruction": "initiate scan of area_A", "output": "F(scan(area_A))"}
+{"instruction": "begin inspection of zone_1", "output": "F(scan(zone_1))"}
+{"instruction": "execute sweep of perimeter_B", "output": "F(scan(perimeter_B))"}
+{"instruction": "run diagnostic scan over area_B", "output": "F(scan(area_B))"}
+{"instruction": "survey site_C", "output": "F(scan(site_C))"}
+{"instruction": "wait at waypoint_1 for 10 seconds", "output": "F(at(waypoint_1) & hover(10))"}
+{"instruction": "hover 5 seconds at wp_2", "output": "F(at(wp_2) & hover(5))"}
+{"instruction": "pause at base_station for 30 seconds", "output": "F(at(base_station) & hover(30))"}
+{"instruction": "hold position at zone_A for 15 seconds", "output": "F(at(zone_A) & hover(15))"}
+{"instruction": "stay put at the pad for 45 seconds", "output": "F(at(landing_pad) & hover(45))"}
+{"instruction": "wait at waypoint_1, duration 10", "output": "F(at(waypoint_1) & hover(10))"}
+{"instruction": "at wp_2, hover for 5 seconds", "output": "F(at(wp_2) & hover(5))"}
+{"instruction": "30 sec hover at base_station", "output": "F(at(base_station) & hover(30))"}
+{"instruction": "hold for 15 seconds at zone_A", "output": "F(at(zone_A) & hover(15))"}
+{"instruction": "wait at waypoint_3 for 20 seconds", "output": "F(at(waypoint_3) & hover(20))"}
+{"instruction": "hover at wp_1 for 60 seconds", "output": "F(at(wp_1) & hover(60))"}
+{"instruction": "stop at waypoint_2 for 12 seconds", "output": "F(at(waypoint_2) & hover(12))"}
+{"instruction": "fly above 2.0 meters", "output": "F(above(2.0))"}
+{"instruction": "briefly go above 1.5 meters", "output": "F(above(1.5))"}
+{"instruction": "ascend to 5 meters then continue", "output": "F(above(5.0))"}
+{"instruction": "maintain altitude above 3.5 meters always", "output": "G(above(3.5))"}
+{"instruction": "always stay over 1.8 meters", "output": "G(above(1.8))"}
+{"instruction": "keep the drone above 4 meters", "output": "G(above(4.0))"}
+{"instruction": "ensure altitude is above 2.2 meters at all times", "output": "G(above(2.2))"}
+{"instruction": "must remain above 1.0 meters during mission", "output": "G(above(1.0))"}
+{"instruction": "fly to waypoint_A then go to waypoint_B", "output": "F(at(waypoint_A) & F(at(waypoint_B)))"}
+{"instruction": "scan area_1 then land", "output": "F(scan(area_1) & F(land()))"}
+{"instruction": "go to wp_alpha then scan zone_beta", "output": "F(at(wp_alpha) & F(scan(zone_beta)))"}
+{"instruction": "check area_2 then return to the base_station", "output": "F(scan(area_2) & F(at(base_station)))"}
+{"instruction": "go to waypoint_3 then hover for 10 seconds", "output": "F(at(waypoint_3) & F(hover(10)))"}
+{"instruction": "move to waypoint_1 and scan area_1 simultaneously", "output": "F(at(waypoint_1) & scan(area_1))"}
+{"instruction": "perform scan(area_B) while moving to wp_2", "output": "F(at(wp_2) & scan(area_B))"}
+{"instruction": "hover 5 seconds at zone_A and check perimeter_B", "output": "F(at(zone_A) & hover(5) & scan(perimeter_B))"}
+{"instruction": "always stay above 2.0 meters while flying to wp_1", "output": "G(above(2.0)) & F(at(wp_1))"}
+{"instruction": "keep altitude above 1.5 meters and scan area_2", "output": "G(above(1.5)) & F(scan(area_2))"}
+{"instruction": "go to wp_1, then wp_2, then land", "output": "F(at(wp_1) & F(at(wp_2) & F(land())))"}
+{"instruction": "scan area_1, then go to wp_3, then land", "output": "F(scan(area_1) & F(at(wp_3) & F(land())))"}
+{"instruction": "go to wp_A, scan zone_A, then return to base_station", "output": "F(at(wp_A) & F(scan(zone_A) & F(at(base_station))))"}
+{"instruction": "initiate emergency return now", "output": "F(emergency_return())"}
+{"instruction": "trigger emergency_return sequence", "output": "F(emergency_return())"}
+{"instruction": "execute failsafe return", "output": "F(emergency_return())"}
+{"instruction": "perform an emergency landing immediately", "output": "F(emergency_return())"}
+{"instruction": "go to waypoint_A then immediately land", "output": "F(at(waypoint_A) & F(land()))"}
+{"instruction": "fly to zone_B then scan the area", "output": "F(at(zone_B) & F(scan(zone_B)))"}
+{"instruction": "hover for 10 seconds then go to wp_3", "output": "F(hover(10) & F(at(wp_3)))"}
+{"instruction": "scan area_C and then hover for 5 seconds", "output": "F(scan(area_C) & F(hover(5)))"}
+{"instruction": "go to wp_1, scan area_1, then land", "output": "F(at(wp_1) & F(scan(area_1) & F(land())))"}
+{"instruction": "scan zone_1, go to wp_2, then return to base_station", "output": "F(scan(zone_1) & F(at(wp_2) & F(at(base_station))))"}
+{"instruction": "I need you to go to the impossible_location", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "fly to non_existent_waypoint", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "navigate to the dark side of the moon", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "set destination to nowhere", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "I can't find my way, where should I go?", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "do something useful", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "what is the meaning of life?", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "give me a task", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "do a complete 360 degree flip", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "activate the secret laser weapon", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "execute a complex aerobatic maneuver", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "try to sing a song", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "check the time", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "how much does the drone weigh?", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "what is your favorite color?", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "where is the nearest coffee shop?", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "maintain radio silence", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "avoid any communication attempts", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "go to waypoint_1 while keeping communication active", "output": "F(at(waypoint_1))"}
+{"instruction": "scan area_2 but look out for obstacles", "output": "F(scan(area_2))"}
+{"instruction": "proceed to wp_3 but ensure no system health issues", "output": "F(at(wp_3))"}
+{"instruction": "fly near waypoint_4", "output": "F(at(waypoint_4))"}
+{"instruction": "check area_A, no matter what", "output": "F(scan(area_A))"}
+{"instruction": "abort mission and return to base", "output": "F(emergency_return())"}
+{"instruction": "fly to wp_5", "output": "F(at(wp_5))"}
+{"instruction": "proceed to zone_B", "output": "F(at(zone_B))"}
+{"instruction": "head to base_station", "output": "F(at(base_station))"}
+{"instruction": "go straight to waypoint_6", "output": "F(at(waypoint_6))"}
+{"instruction": "move towards the pad", "output": "F(at(landing_pad))"}
+{"instruction": "travel to wp_7", "output": "F(at(wp_7))"}
+{"instruction": "direct course to waypoint_8", "output": "F(at(waypoint_8))"}
+{"instruction": "perform scan of area_C", "output": "F(scan(area_C))"}
+{"instruction": "inspect zone_3", "output": "F(scan(zone_3))"}
+{"instruction": "sweep perimeter_A", "output": "F(scan(perimeter_A))"}
+{"instruction": "do a sensor check on site_D", "output": "F(scan(site_D))"}
+{"instruction": "wait at wp_8 for 10 seconds", "output": "F(at(wp_8) & hover(10))"}
+{"instruction": "hover for 50 seconds at zone_C", "output": "F(at(zone_C) & hover(50))"}
+{"instruction": "pause 2 seconds at waypoint_9", "output": "F(at(waypoint_9) & hover(2))"}
+{"instruction": "go to wp_1 then go to wp_2", "output": "F(at(wp_1) & F(at(wp_2)))"}
+{"instruction": "scan area_1 then scan area_2", "output": "F(scan(area_1) & F(scan(area_2)))"}
+{"instruction": "fly to wp_A and scan area_C", "output": "F(at(wp_A) & scan(area_C))"}
+{"instruction": "fly to wp_1, then wp_2, then wp_3", "output": "F(at(wp_1) & F(at(wp_2) & F(at(wp_3))))"}
+{"instruction": "scan area_1, scan area_2, then land", "output": "F(scan(area_1) & F(scan(area_2) & F(land())))"}
+{"instruction": "always fly above 4.5 meters and go to wp_4", "output": "G(above(4.5)) & F(at(wp_4))"}
+{"instruction": "keep above 2 meters while scanning zone_D", "output": "G(above(2.0)) & F(scan(zone_D))"}
+{"instruction": "go to zone_1 then scan zone_2", "output": "F(at(zone_1) & F(scan(zone_2)))"}
+{"instruction": "scan area_3 then hover 10 at wp_4", "output": "F(scan(area_3) & F(at(wp_4) & hover(10)))"}
+{"instruction": "go to wp_5 then land", "output": "F(at(wp_5) & F(land()))"}
+{"instruction": "go to base_station and land", "output": "F(at(base_station) & land())"}
+{"instruction": "scan area_4 and land immediately", "output": "F(scan(area_4) & land())"}
+{"instruction": "fly above 1 meter", "output": "F(above(1.0))"}
+{"instruction": "always stay above 5 meters", "output": "G(above(5.0))"}
+{"instruction": "go to wp_1 and hover for 10 seconds", "output": "F(at(wp_1) & hover(10))"}
+{"instruction": "scan area_1 and hover 5 seconds", "output": "F(scan(area_1) & hover(5))"}
+{"instruction": "at wp_2, hover 20 seconds", "output": "F(at(wp_2) & hover(20))"}
+{"instruction": "always fly above 3.1 meters and go to wp_5", "output": "G(above(3.1)) & F(at(wp_5))"}
+{"instruction": "go to wp_1, scan area_A, then wp_2", "output": "F(at(wp_1) & F(scan(area_A) & F(at(wp_2))))"}
+{"instruction": "hover at wp_3 for 15 seconds then scan area_B", "output": "F(at(wp_3) & hover(15) & F(scan(area_B)))"}
+{"instruction": "scan area_B, then go to wp_3, then land", "output": "F(scan(area_B) & F(at(wp_3) & F(land())))"}
+{"instruction": "terminate mission and return", "output": "F(emergency_return())"}
+{"instruction": "check the temperature", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "go to the place where I live", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "go to wp_1 then go to base_station", "output": "F(at(wp_1) & F(at(base_station)))"}
+{"instruction": "scan area_1 and area_2", "output": "F(scan(area_1) & scan(area_2))"}
+{"instruction": "perform scan of area_1 then go to wp_2", "output": "F(scan(area_1) & F(at(wp_2)))"}
+{"instruction": "at wp_2, wait 60 seconds", "output": "F(at(wp_2) & hover(60))"}
+{"instruction": "go to wp_1 and land", "output": "F(at(wp_1) & land())"}
+{"instruction": "land now", "output": "F(land())"}
+{"instruction": "fly to zone_1", "output": "F(at(zone_1))"}
+{"instruction": "always stay over 3 meters", "output": "G(above(3.0))"}
+{"instruction": "go to wp_1, then scan area_A", "output": "F(at(wp_1) & F(scan(area_A)))"}
+{"instruction": "go to wp_1 then wp_2", "output": "F(at(wp_1) & F(at(wp_2)))"}
+{"instruction": "scan zone_1 then scan zone_2", "output": "F(scan(zone_1) & F(scan(zone_2)))"}
+{"instruction": "go to wp_1, scan area_1, land", "output": "F(at(wp_1) & F(scan(area_1) & F(land())))"}
+{"instruction": "go to wp_2 then scan area_B then go to base_station", "output": "F(at(wp_2) & F(scan(area_B) & F(at(base_station))))"}
+{"instruction": "go to wp_3, then hover 10 seconds, then land", "output": "F(at(wp_3) & F(hover(10) & F(land())))"}
+{"instruction": "hover at wp_4 for 5 seconds and scan area_C", "output": "F(at(wp_4) & hover(5) & scan(area_C))"}
+{"instruction": "always above 2.5 meters while flying to wp_5", "output": "G(above(2.5)) & F(at(wp_5))"}
+{"instruction": "what is the height of the drone?", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "navigate to unknown_zone", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "execute a triple flip", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "I'm feeling lost, where should I go?", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "go to wp_1 and wp_2", "output": "F(at(wp_1) & at(wp_2))"}
+{"instruction": "scan area_A or area_B", "output": "F(scan(area_A) | scan(area_B))"}
+{"instruction": "go to wp_A then scan area_B", "output": "F(at(wp_A) & F(scan(area_B)))"}
+{"instruction": "scan area_B then go to wp_A", "output": "F(scan(area_B) & F(at(wp_A)))"}
+{"instruction": "go to wp_A and hover 15 seconds", "output": "F(at(wp_A) & hover(15))"}
+{"instruction": "always fly above 1.1 meters", "output": "G(above(1.1))"}
+{"instruction": "go to wp_1, scan area_1, wp_2", "output": "F(at(wp_1) & F(scan(area_1) & F(at(wp_2))))"}
+{"instruction": "go to wp_3, then scan area_2, then hover 20 seconds", "output": "F(at(wp_3) & F(scan(area_2) & F(hover(20))))"}
+{"instruction": "go to wp_4 and land", "output": "F(at(wp_4) & land())"}
+{"instruction": "scan area_4 and hover 10 seconds", "output": "F(scan(area_4) & hover(10))"}
+{"instruction": "scan area_4 then go to base_station", "output": "F(scan(area_4) & F(at(base_station)))"}
+{"instruction": "go to wp_5 then scan area_5", "output": "F(at(wp_5) & F(scan(area_5)))"}
+{"instruction": "go to wp_6 then land", "output": "F(at(wp_6) & F(land()))"}
+{"instruction": "emergency mission end", "output": "F(emergency_return())"}
+{"instruction": "execute immediate return", "output": "F(emergency_return())"}
+{"instruction": "go to wp_7 and scan area_7", "output": "F(at(wp_7) & scan(area_7))"}
+{"instruction": "hover at wp_8 for 3 seconds", "output": "F(at(wp_8) & hover(3))"}
+{"instruction": "maintain above 3 meters while moving to wp_9", "output": "G(above(3.0)) & F(at(wp_9))"}
+{"instruction": "fly to wp_10 and then scan area_10", "output": "F(at(wp_10) & F(scan(area_10)))"}
+{"instruction": "hover 15 seconds at wp_10", "output": "F(at(wp_10) & hover(15))"}
+{"instruction": "always stay above 1.3 meters", "output": "G(above(1.3))"}
+{"instruction": "go to wp_11", "output": "F(at(wp_11))"}
+{"instruction": "scan area_11", "output": "F(scan(area_11))"}
+{"instruction": "hover at wp_12 for 8 seconds", "output": "F(at(wp_12) & hover(8))"}
+{"instruction": "go to wp_13 then wp_14", "output": "F(at(wp_13) & F(at(wp_14)))"}
+{"instruction": "go to wp_15 and scan area_15", "output": "F(at(wp_15) & scan(area_15))"}
+{"instruction": "go to wp_16, scan area_16, land", "output": "F(at(wp_16) & F(scan(area_16) & F(land())))"}
+{"instruction": "always maintain 2.1 meters and scan area_17", "output": "G(above(2.1)) & F(scan(area_17))"}
+{"instruction": "abort and return to base", "output": "F(emergency_return())"}
+{"instruction": "fly to zone_1 and scan zone_2", "output": "F(at(zone_1) & scan(zone_2))"}
+{"instruction": "scan area_X then hover 5 seconds at wp_Y", "output": "F(scan(area_X) & F(at(wp_Y) & hover(5)))"}
+{"instruction": "go to wp_A, hover 5, then scan area_B, then land", "output": "F(at(wp_A) & F(hover(5) & F(scan(area_B) & F(land()))))"}
+{"instruction": "I need you to go to the kitchen", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "what is your name?", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "perform a spiral descent", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "what do I do now?", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "go to wp_1 and wp_2 and wp_3", "output": "F(at(wp_1) & at(wp_2) & at(wp_3))"}
+{"instruction": "scan area_A or area_B or area_C", "output": "F(scan(area_A) | scan(area_B) | scan(area_C))"}
+{"instruction": "scan area_1 and area_2 and area_3", "output": "F(scan(area_1) & scan(area_2) & scan(area_3))"}
+{"instruction": "go to wp_1, wp_2, wp_3", "output": "F(at(wp_1) & F(at(wp_2) & F(at(wp_3))))"}
+{"instruction": "scan zone_1 then wp_2 then land", "output": "F(scan(zone_1) & F(at(wp_2) & F(land())))"}
+{"instruction": "hover at wp_A for 25 seconds then go to wp_B", "output": "F(at(wp_A) & hover(25) & F(at(wp_B)))"}
+{"instruction": "go to wp_A and hover 5 seconds, then scan area_B", "output": "F(at(wp_A) & hover(5) & F(scan(area_B)))"}
+{"instruction": "always stay over 3.5 meters while flying to wp_A and scanning area_B", "output": "G(above(3.5)) & F(at(wp_A) & scan(area_B))"}
+{"instruction": "go to wp_B and land immediately", "output": "F(at(wp_B) & land())"}
+{"instruction": "scan area_C and land", "output": "F(scan(area_C) & land())"}
+{"instruction": "go to wp_C and scan area_C", "output": "F(at(wp_C) & scan(area_C))"}
+{"instruction": "land at landing_pad", "output": "F(land())"}
+{"instruction": "go to wp_D", "output": "F(at(wp_D))"}
+{"instruction": "scan area_D", "output": "F(scan(area_D))"}
+{"instruction": "hover at wp_E for 10 seconds", "output": "F(at(wp_E) & hover(10))"}
+{"instruction": "go to wp_F then wp_G", "output": "F(at(wp_F) & F(at(wp_G)))"}
+{"instruction": "go to wp_H and scan area_H", "output": "F(at(wp_H) & scan(area_H))"}
+{"instruction": "go to wp_I, scan area_I, land", "output": "F(at(wp_I) & F(scan(area_I) & F(land())))"}
+{"instruction": "always maintain 4.1 meters and scan area_J", "output": "G(above(4.1)) & F(scan(area_J))"}
+{"instruction": "emergency", "output": "F(emergency_return())"}
+{"instruction": "fly to zone_3 and scan zone_4", "output": "F(at(zone_3) & scan(zone_4))"}
+{"instruction": "scan area_K then hover 15 seconds at wp_L", "output": "F(scan(area_K) & F(at(wp_L) & hover(15)))"}
+{"instruction": "go to wp_M, hover 10, scan area_N, land", "output": "F(at(wp_M) & F(hover(10) & F(scan(area_N) & F(land()))))"}
+{"instruction": "I need you to go to the roof of the building", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "what is your current battery level?", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "do an inverted hover", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "what's the plan?", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "go to wp_O and wp_P", "output": "F(at(wp_O) & at(wp_P))"}
+{"instruction": "scan area_P or area_Q", "output": "F(scan(area_P) | scan(area_Q))"}
+{"instruction": "go to wp_R then scan area_S", "output": "F(at(wp_R) & F(scan(area_S)))"}
+{"instruction": "scan area_T then go to wp_U", "output": "F(scan(area_T) & F(at(wp_U)))"}
+{"instruction": "go to wp_V and hover 20 seconds", "output": "F(at(wp_V) & hover(20))"}
+{"instruction": "always fly above 1.7 meters", "output": "G(above(1.7))"}
+{"instruction": "go to wp_W, scan area_X, wp_Y", "output": "F(at(wp_W) & F(scan(area_X) & F(at(wp_Y))))"}
+{"instruction": "go to wp_Z, scan area_Z, then hover 30 seconds", "output": "F(at(wp_Z) & F(scan(area_Z) & F(hover(30))))"}
+{"instruction": "go to base_station and land right away", "output": "F(at(base_station) & land())"}
+{"instruction": "scan perimeter_A and hover 10 seconds", "output": "F(scan(perimeter_A) & hover(10))"}
+{"instruction": "scan perimeter_A then go to wp_1", "output": "F(scan(perimeter_A) & F(at(wp_1)))"}
+{"instruction": "go to wp_2 then scan area_B", "output": "F(at(wp_2) & F(scan(area_B)))"}
+{"instruction": "go to wp_3 then land, please", "output": "F(at(wp_3) & F(land()))"}
+{"instruction": "trigger immediate mission end", "output": "F(emergency_return())"}
+{"instruction": "go to wp_4 and scan area_C", "output": "F(at(wp_4) & scan(area_C))"}
+{"instruction": "hover at wp_5 for 15 seconds", "output": "F(at(wp_5) & hover(15))"}
+{"instruction": "maintain above 4 meters while moving to wp_6", "output": "G(above(4.0)) & F(at(wp_6))"}
+{"instruction": "fly to wp_7 and then scan area_D", "output": "F(at(wp_7) & F(scan(area_D)))"}
+{"instruction": "hover 5 seconds at wp_8", "output": "F(at(wp_8) & hover(5))"}
+{"instruction": "always stay above 2.3 meters", "output": "G(above(2.3))"}
+{"instruction": "go to wp_9", "output": "F(at(wp_9))"}
+{"instruction": "scan area_E", "output": "F(scan(area_E))"}
+{"instruction": "hover at wp_10 for 2 seconds", "output": "F(at(wp_10) & hover(2))"}
+{"instruction": "go to wp_11 then wp_12", "output": "F(at(wp_11) & F(at(wp_12)))"}
+{"instruction": "go to wp_13 and scan area_F", "output": "F(at(wp_13) & scan(area_F))"}
+{"instruction": "go to wp_14, scan area_G, land", "output": "F(at(wp_14) & F(scan(area_G) & F(land())))"}
+{"instruction": "always maintain 1.9 meters and scan area_H", "output": "G(above(1.9)) & F(scan(area_H))"}
+{"instruction": "emergency shutdown", "output": "F(emergency_return())"}
+{"instruction": "fly to zone_2 and scan zone_3", "output": "F(at(zone_2) & scan(zone_3))"}
+{"instruction": "scan area_I then hover 20 seconds at wp_J", "output": "F(scan(area_I) & F(at(wp_J) & hover(20)))"}
+{"instruction": "go to wp_K, hover 20, scan area_L, land", "output": "F(at(wp_K) & F(hover(20) & F(scan(area_L) & F(land()))))"}
+{"instruction": "I need you to go to the ocean", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "what is your speed?", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "perform a power loop", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "what mission is next?", "output": "ERROR(AMBIGUOUS_QUERY)"}
+{"instruction": "go to wp_M and wp_N", "output": "F(at(wp_M) & at(wp_N))"}
+{"instruction": "scan area_N or area_O", "output": "F(scan(area_N) | scan(area_O))"}
+{"instruction": "go to wp_P then scan area_Q", "output": "F(at(wp_P) & F(scan(area_Q)))"}
+{"instruction": "scan area_R then go to wp_S", "output": "F(scan(area_R) & F(at(wp_S)))"}
+{"instruction": "go to wp_T and hover 12 seconds", "output": "F(at(wp_T) & hover(12))"}
+{"instruction": "always fly above 1.4 meters", "output": "G(above(1.4))"}
+{"instruction": "go to wp_U, scan area_V, wp_W", "output": "F(at(wp_U) & F(scan(area_V) & F(at(wp_W))))"}
+{"instruction": "go to wp_X, scan area_Y, then hover 10 seconds", "output": "F(at(wp_X) & F(scan(area_Y) & F(hover(10))))"}
+{"instruction": "go to base_station and land right away", "output": "F(at(base_station) & land())"}
+{"instruction": "scan perimeter_B and hover 15 seconds", "output": "F(scan(perimeter_B) & hover(15))"}
+{"instruction": "scan perimeter_B then go to wp_3", "output": "F(scan(perimeter_B) & F(at(wp_3)))"}
+{"instruction": "go to wp_4 then scan area_C", "output": "F(at(wp_4) & F(scan(area_C)))"}
+{"instruction": "go to wp_5 then land, please", "output": "F(at(wp_5) & F(land()))"}
+{"instruction": "trigger immediate mission end", "output": "F(emergency_return())"}
+{"instruction": "go to wp_6 and scan area_D", "output": "F(at(wp_6) & scan(area_D))"}
+{"instruction": "hover at wp_7 for 8 seconds", "output": "F(at(wp_7) & hover(8))"}
+{"instruction": "maintain above 3.5 meters while moving to wp_8", "output": "G(above(3.5)) & F(at(wp_8))"}
+{"instruction": "fly to wp_9 and then scan area_E", "output": "F(at(wp_9) & F(scan(area_E)))"}
+{"instruction": "hover 10 seconds at wp_10", "output": "F(at(wp_10) & hover(10))"}
+{"instruction": "always stay above 2.8 meters", "output": "G(above(2.8))"}
+{"instruction": "go to wp_11", "output": "F(at(wp_11))"}
+{"instruction": "scan area_F", "output": "F(scan(area_F))"}
+{"instruction": "hover at wp_12 for 1 second", "output": "F(at(wp_12) & hover(1))"}
+{"instruction": "go to wp_13 then wp_14", "output": "F(at(wp_13) & F(at(wp_14)))"}
+{"instruction": "go to wp_15 and scan area_G", "output": "F(at(wp_15) & scan(area_G))"}
+{"instruction": "go to wp_16, scan area_H, land", "output": "F(at(wp_16) & F(scan(area_H) & F(land())))"}
+{"instruction": "always maintain 1.1 meters and scan area_I", "output": "G(above(1.1)) & F(scan(area_I))"}
+{"instruction": "emergency stop", "output": "F(emergency_return())"}
+{"instruction": "fly to zone_4 and scan zone_5", "output": "F(at(zone_4) & scan(zone_5))"}
+{"instruction": "scan area_J then hover 15 seconds at wp_K", "output": "F(scan(area_J) & F(at(wp_K) & hover(15)))"}
+{"instruction": "go to wp_L, hover 10, scan area_M, land", "output": "F(at(wp_L) & F(hover(10) & F(scan(area_M) & F(land()))))"}
+{"instruction": "go to the control tower", "output": "ERROR(UNKNOWN_LOCATION)"}
+{"instruction": "tell me a joke", "output": "ERROR(IRRELEVANT_QUERY)"}
+{"instruction": "do a fast ascent", "output": "ERROR(UNSUPPORTED_ACTION)"}
+{"instruction": "what is the next instruction?", "output": "ERROR(AMBIGUOUS_QUERY)"}
