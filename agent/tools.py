@@ -5,11 +5,22 @@ from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from .model_server import get_gguf_model
 from .ltl.parser import LTLParser
+from .ltl.semantic_validator import SemanticValidator
 # from .ltl.safety import SafetyConstraints  # Disabled
 from .config_loader import get_config
 
 # Set up logging
 logger = logging.getLogger(__name__)
+
+# Module-level singletons
+_semantic_validator = None
+
+def get_semantic_validator():
+    """Lazy-load semantic validator"""
+    global _semantic_validator
+    if _semantic_validator is None:
+        _semantic_validator = SemanticValidator()
+    return _semantic_validator
 
 def get_environment_data():
     """Get environment data from configuration"""
@@ -103,15 +114,22 @@ Respond only with the LTL formula."""
         
         base_ltl = response.content.strip()
         
-        # Parse and inject safety constraints
+        # Step 1: Syntax validation
         parser = LTLParser()
         is_valid, error_msg = parser.validate_syntax(base_ltl)
         
         if not is_valid:
-            logger.error(f"Invalid LTL syntax: {error_msg}")
+            logger.warning(f"Invalid LTL syntax: {error_msg}")
             return f"INVALID_SYNTAX: {error_msg}"
         
-        # Safety injection disabled - return raw LTL
+        # Step 2: Semantic validation (NEW)
+        semantic_validator = get_semantic_validator()
+        is_valid, error = semantic_validator.validate(base_ltl)
+        
+        if not is_valid:
+            logger.error(f"Semantic validation failed: {error}")
+            return f"INVALID_SEMANTICS: {error}"
+        
         return base_ltl
         
     except Exception as e:
@@ -157,6 +175,8 @@ def check_feasibility(ltl_formula: str) -> str:
     # Handle error cases from translation
     if ltl_formula.startswith("INVALID_SYNTAX:"):
         return "NOT FEASIBLE: Invalid LTL syntax"
+    if ltl_formula.startswith("INVALID_SEMANTICS:"):
+        return "NOT FEASIBLE: Semantic validation error"
     if ltl_formula.startswith("ERROR:"):
         return "NOT FEASIBLE: Translation error"
         

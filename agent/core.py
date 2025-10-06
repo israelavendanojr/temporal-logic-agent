@@ -102,8 +102,10 @@ def router(state: AgentState) -> str:
     if last_message_content == "AMBIGUOUS_QUERY":
         return "clarify"
     
-    # Handle new error formats
-    if last_message_content.startswith("INVALID_SYNTAX:") or last_message_content.startswith("ERROR:"):
+    # Handle validation errors
+    if (last_message_content.startswith("INVALID_SYNTAX:") or 
+        last_message_content.startswith("INVALID_SEMANTICS:") or  # NEW
+        last_message_content.startswith("ERROR:")):
         return "check_feasibility"
         
     # Check for known logical fails before attempting validation

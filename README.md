@@ -27,3 +27,19 @@ The project follows a clean layered architecture pattern with clear separation o
 - **`/config/`** - Environment configuration including flight zones, waypoints, obstacles, and safety parameters
 - **`/models/`** - Fine-tuned GGUF model for LTL translation and training dataset
 - **`/main.py`** - Application entry point with CLI interface for interactive and batch processing modes
+
+## Validation Pipeline
+
+The system uses a multi-stage validation pipeline to ensure LTL correctness:
+
+1. **Syntax Validation** (`LTLParser`) - Checks grammar, balanced parentheses, valid operators
+2. **Semantic Validation** (`SemanticValidator`) - Checks logical consistency, detects impossible constraints
+3. **Feasibility Checking** - Verifies waypoints exist, altitude bounds respected
+
+### Semantic Rules
+
+The semantic validator enforces:
+- `clear_of(X)` = "maintain distance from X" (positive assertion)
+- `!clear_of(X)` = "do NOT maintain distance" = collision (always invalid for obstacles)
+- No conflicting spatial constraints (e.g., `G(at(A)) & G(at(B))`)
+- No stationary + moving conflicts
