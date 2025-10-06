@@ -272,3 +272,279 @@
 {"instruction": "stay above 2 meters", "output": "G(above(2.0))"}
 {"instruction": "maintain altitude above 1.5 meters", "output": "G(above(1.5))"}
 {"instruction": "always stay in bounds", "output": "G(in_bounds())"}
+{"instruction": "navigate to waypoint_f", "output": "F(move_to(waypoint_f))"}
+{"instruction": "travel to waypoint_g", "output": "F(move_to(waypoint_g))"}
+{"instruction": "proceed to waypoint_h", "output": "F(move_to(waypoint_h))"}
+{"instruction": "head to waypoint_i", "output": "F(move_to(waypoint_i))"}
+{"instruction": "move towards waypoint_j", "output": "F(move_to(waypoint_j))"}
+{"instruction": "fly to waypoint_k", "output": "F(move_to(waypoint_k))"}
+{"instruction": "go to waypoint_l", "output": "F(move_to(waypoint_l))"}
+{"instruction": "navigate to waypoint_m", "output": "F(move_to(waypoint_m))"}
+{"instruction": "travel to waypoint_n", "output": "F(move_to(waypoint_n))"}
+{"instruction": "proceed to waypoint_o", "output": "F(move_to(waypoint_o))"}
+{"instruction": "head to waypoint_p", "output": "F(move_to(waypoint_p))"}
+{"instruction": "move towards waypoint_q", "output": "F(move_to(waypoint_q))"}
+{"instruction": "fly to waypoint_r", "output": "F(move_to(waypoint_r))"}
+{"instruction": "go to waypoint_s", "output": "F(move_to(waypoint_s))"}
+{"instruction": "navigate to waypoint_t", "output": "F(move_to(waypoint_t))"}
+{"instruction": "travel to waypoint_u", "output": "F(move_to(waypoint_u))"}
+{"instruction": "proceed to waypoint_v", "output": "F(move_to(waypoint_v))"}
+{"instruction": "head to waypoint_w", "output": "F(move_to(waypoint_w))"}
+{"instruction": "move towards waypoint_x", "output": "F(move_to(waypoint_x))"}
+{"instruction": "fly to waypoint_y", "output": "F(move_to(waypoint_y))"}
+{"instruction": "go to waypoint_z", "output": "F(move_to(waypoint_z))"}
+{"instruction": "navigate to wp_delta", "output": "F(move_to(wp_delta))"}
+{"instruction": "travel to wp_epsilon", "output": "F(move_to(wp_epsilon))"}
+{"instruction": "proceed to checkpoint_1", "output": "F(move_to(checkpoint_1))"}
+{"instruction": "head to location_a", "output": "F(move_to(location_a))"}
+{"instruction": "keep altitude above 0.5 meters", "output": "G(above(0.5))"}
+{"instruction": "maintain height above 0.8 meters", "output": "G(above(0.8))"}
+{"instruction": "stay at elevation above 1.2 meters", "output": "G(above(1.2))"}
+{"instruction": "maintain altitude above 1.5 meters", "output": "G(above(1.5))"}
+{"instruction": "keep height above 1.8 meters", "output": "G(above(1.8))"}
+{"instruction": "maintain altitude above 2.5 meters", "output": "G(above(2.5))"}
+{"instruction": "keep altitude above 3.0 meters", "output": "G(above(3.0))"}
+{"instruction": "maintain height above 3.5 meters", "output": "G(above(3.5))"}
+{"instruction": "stay at elevation above 4.0 meters", "output": "G(above(4.0))"}
+{"instruction": "maintain altitude above 4.5 meters", "output": "G(above(4.5))"}
+{"instruction": "keep altitude above 5.0 meters", "output": "G(above(5.0))"}
+{"instruction": "avoid obstacle_3", "output": "G(clear_of(obstacle_3))"}
+{"instruction": "steer clear of obstacle_4", "output": "G(clear_of(obstacle_4))"}
+{"instruction": "stay away from obstacle_5", "output": "G(clear_of(obstacle_5))"}
+{"instruction": "keep distance from obstacle_6", "output": "G(clear_of(obstacle_6))"}
+{"instruction": "don't approach obstacle_7", "output": "G(clear_of(obstacle_7))"}
+{"instruction": "avoid barrier_1", "output": "G(clear_of(barrier_1))"}
+{"instruction": "steer clear of barrier_2", "output": "G(clear_of(barrier_2))"}
+{"instruction": "stay away from barrier_3", "output": "G(clear_of(barrier_3))"}
+{"instruction": "keep distance from barrier_4", "output": "G(clear_of(barrier_4))"}
+{"instruction": "don't approach barrier_5", "output": "G(clear_of(barrier_5))"}
+{"instruction": "always remain in area_4", "output": "G(in_area(area_4))"}
+{"instruction": "always stay in area_5", "output": "G(in_area(area_5))"}
+{"instruction": "always remain in zone_4", "output": "G(in_area(zone_4))"}
+{"instruction": "always stay in sector_a", "output": "G(in_area(sector_a))"}
+{"instruction": "in the next step navigate to waypoint_f", "output": "X(move_to(waypoint_f))"}
+{"instruction": "in the next step travel to waypoint_g", "output": "X(move_to(waypoint_g))"}
+{"instruction": "in the next step proceed to waypoint_h", "output": "X(move_to(waypoint_h))"}
+{"instruction": "in the next step head to waypoint_i", "output": "X(move_to(waypoint_i))"}
+{"instruction": "in the next step move towards waypoint_j", "output": "X(move_to(waypoint_j))"}
+{"instruction": "in the next step fly to waypoint_k", "output": "X(move_to(waypoint_k))"}
+{"instruction": "in the next step go to waypoint_l", "output": "X(move_to(waypoint_l))"}
+{"instruction": "in the next step navigate to waypoint_m", "output": "X(move_to(waypoint_m))"}
+{"instruction": "in the next step travel to waypoint_n", "output": "X(move_to(waypoint_n))"}
+{"instruction": "in the next step proceed to waypoint_o", "output": "X(move_to(waypoint_o))"}
+{"instruction": "in the next step head to waypoint_p", "output": "X(move_to(waypoint_p))"}
+{"instruction": "in the next step move towards waypoint_q", "output": "X(move_to(waypoint_q))"}
+{"instruction": "in the next step fly to waypoint_r", "output": "X(move_to(waypoint_r))"}
+{"instruction": "in the next step go to waypoint_s", "output": "X(move_to(waypoint_s))"}
+{"instruction": "in the next step navigate to waypoint_t", "output": "X(move_to(waypoint_t))"}
+{"instruction": "in the next step travel to waypoint_u", "output": "X(move_to(waypoint_u))"}
+{"instruction": "in the next step proceed to waypoint_v", "output": "X(move_to(waypoint_v))"}
+{"instruction": "in the next step head to waypoint_w", "output": "X(move_to(waypoint_w))"}
+{"instruction": "in the next step move towards waypoint_x", "output": "X(move_to(waypoint_x))"}
+{"instruction": "in the next step fly to waypoint_y", "output": "X(move_to(waypoint_y))"}
+{"instruction": "go to waypoint_f and waypoint_g", "output": "F(at(waypoint_f)) & F(at(waypoint_g))"}
+{"instruction": "reach waypoint_h and waypoint_i", "output": "F(at(waypoint_h)) & F(at(waypoint_i))"}
+{"instruction": "visit waypoint_j and waypoint_k", "output": "F(at(waypoint_j)) & F(at(waypoint_k))"}
+{"instruction": "fly to waypoint_l and also go to waypoint_m", "output": "F(at(waypoint_l)) & F(at(waypoint_m))"}
+{"instruction": "navigate to waypoint_n and waypoint_o", "output": "F(at(waypoint_n)) & F(at(waypoint_o))"}
+{"instruction": "scan area_4 while avoiding obstacle_3", "output": "F(scan(area_4)) & G(clear_of(obstacle_3))"}
+{"instruction": "hover for 10 seconds while staying clear of obstacle_4", "output": "F(hover(10)) & G(clear_of(obstacle_4))"}
+{"instruction": "maintain altitude above 1.5m and stay in bounds", "output": "G(above(1.5)) & G(in_bounds())"}
+{"instruction": "go to waypoint_p while avoiding obstacle_5", "output": "F(at(waypoint_p)) & G(clear_of(obstacle_5))"}
+{"instruction": "scan area_5 and maintain altitude above 2.0m", "output": "F(scan(area_5)) & G(above(2.0))"}
+{"instruction": "travel to waypoint_q and waypoint_r", "output": "F(at(waypoint_q)) & F(at(waypoint_r))"}
+{"instruction": "proceed to waypoint_s and waypoint_t", "output": "F(at(waypoint_s)) & F(at(waypoint_t))"}
+{"instruction": "head to waypoint_u and waypoint_v", "output": "F(at(waypoint_u)) & F(at(waypoint_v))"}
+{"instruction": "move towards waypoint_w and waypoint_x", "output": "F(at(waypoint_w)) & F(at(waypoint_x))"}
+{"instruction": "fly to waypoint_y and waypoint_z", "output": "F(at(waypoint_y)) & F(at(waypoint_z))"}
+{"instruction": "survey area_6 while avoiding barrier_1", "output": "F(scan(area_6)) & G(clear_of(barrier_1))"}
+{"instruction": "inspect area_7 while staying clear of barrier_2", "output": "F(scan(area_7)) & G(clear_of(barrier_2))"}
+{"instruction": "monitor area_8 and maintain altitude above 2.5m", "output": "F(scan(area_8)) & G(above(2.5))"}
+{"instruction": "check area_9 while avoiding obstacle_6", "output": "F(scan(area_9)) & G(clear_of(obstacle_6))"}
+{"instruction": "scan area_10 and stay in bounds", "output": "F(scan(area_10)) & G(in_bounds())"}
+{"instruction": "navigate to wp_delta and wp_epsilon", "output": "F(at(wp_delta)) & F(at(wp_epsilon))"}
+{"instruction": "travel to checkpoint_1 and checkpoint_2", "output": "F(at(checkpoint_1)) & F(at(checkpoint_2))"}
+{"instruction": "proceed to location_a and location_b", "output": "F(at(location_a)) & F(at(location_b))"}
+{"instruction": "head to location_c and location_d", "output": "F(at(location_c)) & F(at(location_d))"}
+{"instruction": "move towards location_e and location_f", "output": "F(at(location_e)) & F(at(location_f))"}
+{"instruction": "fly to location_g while avoiding barrier_3", "output": "F(at(location_g)) & G(clear_of(barrier_3))"}
+{"instruction": "go to location_h and maintain altitude above 3.0m", "output": "F(at(location_h)) & G(above(3.0))"}
+{"instruction": "navigate to location_i while staying clear of obstacle_7", "output": "F(at(location_i)) & G(clear_of(obstacle_7))"}
+{"instruction": "travel to location_j and keep distance from barrier_4", "output": "F(at(location_j)) & G(clear_of(barrier_4))"}
+{"instruction": "proceed to zone_5 and maintain height above 3.5m", "output": "F(at(zone_5)) & G(above(3.5))"}
+{"instruction": "reach waypoint_f or waypoint_g", "output": "F(at(waypoint_f)) | F(at(waypoint_g))"}
+{"instruction": "fly to waypoint_h or waypoint_i", "output": "F(at(waypoint_h)) | F(at(waypoint_i))"}
+{"instruction": "go to waypoint_j or waypoint_k", "output": "F(at(waypoint_j)) | F(at(waypoint_k))"}
+{"instruction": "navigate to waypoint_l or waypoint_m", "output": "F(at(waypoint_l)) | F(at(waypoint_m))"}
+{"instruction": "travel to waypoint_n or waypoint_o", "output": "F(at(waypoint_n)) | F(at(waypoint_o))"}
+{"instruction": "proceed to waypoint_p or waypoint_q", "output": "F(at(waypoint_p)) | F(at(waypoint_q))"}
+{"instruction": "head to waypoint_r or waypoint_s", "output": "F(at(waypoint_r)) | F(at(waypoint_s))"}
+{"instruction": "move towards waypoint_t or waypoint_u", "output": "F(at(waypoint_t)) | F(at(waypoint_u))"}
+{"instruction": "fly to waypoint_v or waypoint_w", "output": "F(at(waypoint_v)) | F(at(waypoint_w))"}
+{"instruction": "go to waypoint_x or waypoint_y", "output": "F(at(waypoint_x)) | F(at(waypoint_y))"}
+{"instruction": "never enter area_4", "output": "G(!in_area(area_4))"}
+{"instruction": "avoid going below 1.0 meters", "output": "G(!below(1.0))"}
+{"instruction": "don't approach obstacle_3", "output": "G(!near(obstacle_3, 2.0))"}
+{"instruction": "never go above 4.0 meters", "output": "G(!above(4.0))"}
+{"instruction": "don't enter zone_5", "output": "G(!in_area(zone_5))"}
+{"instruction": "avoid obstacle_4 completely", "output": "G(!clear_of(obstacle_4))"}
+{"instruction": "never fly below 0.8m", "output": "G(!below(0.8))"}
+{"instruction": "don't get near barrier_1", "output": "G(!near(barrier_1, 2.0))"}
+{"instruction": "never enter sector_b", "output": "G(!in_area(sector_b))"}
+{"instruction": "avoid going above 5.0 meters", "output": "G(!above(5.0))"}
+{"instruction": "stay above 1.5 meters until reaching waypoint_f", "output": "above(1.5) U at(waypoint_f)"}
+{"instruction": "maintain altitude above 2.0m until waypoint_g is reached", "output": "above(2.0) U at(waypoint_g)"}
+{"instruction": "keep scanning until battery drops below 25%", "output": "scan(area_4) U battery_level(25)"}
+{"instruction": "hover for 15 seconds until wind speed decreases below 10 knots", "output": "hover(15) U !wind_speed(10)"}
+{"instruction": "remain in area_5 until cleared", "output": "in_area(area_5) U !in_area(area_5)"}
+{"instruction": "stay clear of obstacle_3 until reaching waypoint_h", "output": "clear_of(obstacle_3) U at(waypoint_h)"}
+{"instruction": "maintain battery above 30% until landing", "output": "battery_level(30) U land()"}
+{"instruction": "keep moving until you reach waypoint_i", "output": "moving() U at(waypoint_i)"}
+{"instruction": "stay in bounds until battery level drops below 35%", "output": "in_bounds() U battery_level(35)"}
+{"instruction": "maintain position above 2.5m until landing command is given", "output": "above(2.5) U land()"}
+{"instruction": "continue hovering until wind speed exceeds 20 knots", "output": "hover(10) U wind_speed(20)"}
+{"instruction": "keep distance from obstacle_4 until mission completes", "output": "clear_of(obstacle_4) U at(base_station)"}
+{"instruction": "stay above 1.8 meters until entering area_6", "output": "above(1.8) U in_area(area_6)"}
+{"instruction": "maintain speed until reaching waypoint_j", "output": "moving() U at(waypoint_j)"}
+{"instruction": "keep altitude below 3.0m until scanning area_7", "output": "below(3.0) U scan(area_7)"}
+{"instruction": "stay near waypoint_k until area_8 is scanned", "output": "near(waypoint_k, 1.0) U scan(area_8)"}
+{"instruction": "maintain position until emergency return is triggered", "output": "stationary() U emergency_return()"}
+{"instruction": "keep altitude below 4.5 meters until reaching wp_delta", "output": "below(4.5) U at(wp_delta)"}
+{"instruction": "stay clear of barrier_1 until mission starts", "output": "clear_of(barrier_1) U move_to(waypoint_l)"}
+{"instruction": "maintain battery above 40% until landing at landing_pad", "output": "battery_level(40) U at(landing_pad)"}
+{"instruction": "keep moving until system check is complete", "output": "moving() U system_check()"}
+{"instruction": "stay above 2.2 meters until entering zone_6", "output": "above(2.2) U in_area(zone_6)"}
+{"instruction": "maintain distance from obstacle_5 until reaching waypoint_m", "output": "clear_of(obstacle_5) U at(waypoint_m)"}
+{"instruction": "keep hovering until wind speed drops below 8 knots", "output": "hover(12) U !wind_speed(8)"}
+{"instruction": "stay in area_9 until waypoint_n is reached", "output": "in_area(area_9) U at(waypoint_n)"}
+{"instruction": "maintain altitude above 2.8 meters until scanning area_10", "output": "above(2.8) U scan(area_10)"}
+{"instruction": "keep battery above 45% until returning to base_station", "output": "battery_level(45) U at(base_station)"}
+{"instruction": "stay clear of danger_zone until landing command", "output": "clear_of(danger_zone) U land()"}
+{"instruction": "maintain position until emergency is detected", "output": "stationary() U emergency_detected()"}
+{"instruction": "keep moving until reaching wp_epsilon", "output": "moving() U at(wp_epsilon)"}
+{"instruction": "stay above 3.2 meters until obstacle_6 is cleared", "output": "above(3.2) U clear_of(obstacle_6)"}
+{"instruction": "maintain distance from restricted_zone until waypoint_o", "output": "clear_of(restricted_zone) U at(waypoint_o)"}
+{"instruction": "keep hovering until wind conditions are safe", "output": "hover(18) U !wind_speed(15)"}
+{"instruction": "stay near waypoint_p until area_4 scan completes", "output": "near(waypoint_p, 1.5) U scan(area_4)"}
+{"instruction": "maintain altitude below 3.5 meters until landing", "output": "below(3.5) U land()"}
+{"instruction": "go to waypoint_f then immediately scan area_4", "output": "F(at(waypoint_f) & X(scan(area_4)))"}
+{"instruction": "move to waypoint_g then immediately hover for 8 seconds", "output": "F(at(waypoint_g) & X(hover(8)))"}
+{"instruction": "reach waypoint_h then eventually reach waypoint_i", "output": "F(at(waypoint_h) & X(F(at(waypoint_i))))"}
+{"instruction": "land at waypoint_j then immediately start system check", "output": "F(at(waypoint_j) & X(system_check()))"}
+{"instruction": "fly to waypoint_k then immediately scan area_5", "output": "F(at(waypoint_k) & X(scan(area_5)))"}
+{"instruction": "reach waypoint_l then immediately move to waypoint_m", "output": "F(at(waypoint_l) & X(F(at(waypoint_m))))"}
+{"instruction": "hover for 12 seconds then immediately fly to waypoint_n", "output": "F(hover(12) & X(move_to(waypoint_n)))"}
+{"instruction": "scan area_6 then immediately go to waypoint_o", "output": "F(scan(area_6) & X(move_to(waypoint_o)))"}
+{"instruction": "reach waypoint_p then immediately hover for 15 seconds", "output": "F(at(waypoint_p) & X(hover(15)))"}
+{"instruction": "land then immediately start emergency procedures", "output": "F(land() & X(emergency_return()))"}
+{"instruction": "fly to waypoint_q then immediately scan area_7", "output": "F(at(waypoint_q) & X(scan(area_7)))"}
+{"instruction": "reach waypoint_r then immediately go to waypoint_s", "output": "F(at(waypoint_r) & X(F(at(waypoint_s))))"}
+{"instruction": "hover for 20 seconds then immediately move to waypoint_t", "output": "F(hover(20) & X(move_to(waypoint_t)))"}
+{"instruction": "scan area_8 then immediately fly to waypoint_u", "output": "F(scan(area_8) & X(move_to(waypoint_u)))"}
+{"instruction": "reach waypoint_v then immediately start system check", "output": "F(at(waypoint_v) & X(system_check()))"}
+{"instruction": "fly to waypoint_w then immediately hover for 25 seconds", "output": "F(at(waypoint_w) & X(hover(25)))"}
+{"instruction": "scan area_9 then immediately go to waypoint_x", "output": "F(scan(area_9) & X(move_to(waypoint_x)))"}
+{"instruction": "reach waypoint_y then immediately scan area_10", "output": "F(at(waypoint_y) & X(scan(area_10)))"}
+{"instruction": "hover for 30 seconds then immediately move to waypoint_z", "output": "F(hover(30) & X(move_to(waypoint_z)))"}
+{"instruction": "land at landing_pad then immediately start emergency return", "output": "F(at(landing_pad) & X(emergency_return()))"}
+{"instruction": "fly to wp_delta then immediately hover for 18 seconds", "output": "F(at(wp_delta) & X(hover(18)))"}
+{"instruction": "scan area_4 then immediately go to wp_epsilon", "output": "F(scan(area_4) & X(move_to(wp_epsilon)))"}
+{"instruction": "reach checkpoint_1 then immediately move to checkpoint_2", "output": "F(at(checkpoint_1) & X(F(at(checkpoint_2))))"}
+{"instruction": "hover for 35 seconds then immediately scan area_5", "output": "F(hover(35) & X(scan(area_5)))"}
+{"instruction": "fly to location_a then immediately land", "output": "F(at(location_a) & X(land()))"}
+{"instruction": "scan area_6 then immediately hover for 22 seconds", "output": "F(scan(area_6) & X(hover(22)))"}
+{"instruction": "reach location_b then immediately go to location_c", "output": "F(at(location_b) & X(F(at(location_c))))"}
+{"instruction": "hover for 40 seconds then immediately fly to location_d", "output": "F(hover(40) & X(move_to(location_d)))"}
+{"instruction": "scan area_7 then immediately move to location_e", "output": "F(scan(area_7) & X(move_to(location_e)))"}
+{"instruction": "reach location_f then immediately hover for 28 seconds", "output": "F(at(location_f) & X(hover(28)))"}
+{"instruction": "fly to location_g then immediately start system check", "output": "F(at(location_g) & X(system_check()))"}
+{"instruction": "hover for 45 seconds then immediately scan area_8", "output": "F(hover(45) & X(scan(area_8)))"}
+{"instruction": "scan area_9 then immediately go to location_h", "output": "F(scan(area_9) & X(move_to(location_h)))"}
+{"instruction": "reach location_i then immediately hover for 32 seconds", "output": "F(at(location_i) & X(hover(32)))"}
+{"instruction": "fly to location_j then immediately move to waypoint_f", "output": "F(at(location_j) & X(F(at(waypoint_f))))"}
+{"instruction": "hover for 50 seconds then immediately land", "output": "F(hover(50) & X(land()))"}
+{"instruction": "scan area_10 then immediately fly to waypoint_g", "output": "F(scan(area_10) & X(move_to(waypoint_g)))"}
+{"instruction": "reach zone_6 then immediately scan area_4", "output": "F(at(zone_6) & X(scan(area_4)))"}
+{"instruction": "hover for 55 seconds then immediately move to base_station", "output": "F(hover(55) & X(move_to(base_station)))"}
+{"instruction": "fly to sector_a then immediately hover for 38 seconds", "output": "F(at(sector_a) & X(hover(38)))"}
+{"instruction": "go to waypoint_f while avoiding obstacle_3 and maintaining altitude above 1.5m", "output": "F(at(waypoint_f)) & G(clear_of(obstacle_3)) & G(above(1.5))"}
+{"instruction": "scan area_4 while staying clear of obstacle_4 and maintaining altitude above 2.0m", "output": "F(scan(area_4)) & G(clear_of(obstacle_4)) & G(above(2.0))"}
+{"instruction": "maintain battery above 30% until landing, then start system check", "output": "(battery_level(30) U land()) & F(land() & X(system_check()))"}
+{"instruction": "fly to waypoint_g then waypoint_h while staying above 2.5m and avoiding obstacle_5", "output": "F(at(waypoint_g) & X(F(at(waypoint_h)))) & G(above(2.5)) & G(clear_of(obstacle_5))"}
+{"instruction": "hover for 15 seconds then move to waypoint_i, but never enter area_5", "output": "F(hover(15) & X(move_to(waypoint_i))) & G(!in_area(area_5))"}
+{"instruction": "scan area_6 until battery drops below 35%, then return to base", "output": "(scan(area_6) U battery_level(35)) & F(battery_level(35) & X(F(at(base_station))))"}
+{"instruction": "maintain speed until reaching waypoint_j, then immediately land", "output": "(moving() U at(waypoint_j)) & F(at(waypoint_j) & X(land()))"}
+{"instruction": "go to waypoint_k and waypoint_l sequentially while staying above 1.8m", "output": "F(at(waypoint_k) & X(F(at(waypoint_l)))) & G(above(1.8))"}
+{"instruction": "if obstacle_6 detected, change altitude to 3.0m and continue to waypoint_m", "output": "G(!clear_of(obstacle_6) -> F(above(3.0) & X(F(at(waypoint_m)))))"}
+{"instruction": "hover until wind drops below 10 knots, then fly to waypoint_n and scan area_7", "output": "(hover(10) U !wind_speed(10)) & F(!wind_speed(10) & X(F(at(waypoint_n) & X(scan(area_7)))))"}
+{"instruction": "maintain battery above 40% until reaching waypoint_o, then hover for 20 seconds", "output": "(battery_level(40) U at(waypoint_o)) & F(at(waypoint_o) & X(hover(20)))"}
+{"instruction": "fly to waypoint_p then waypoint_q then waypoint_r, always staying in bounds and avoiding area_8", "output": "F(at(waypoint_p) & X(F(at(waypoint_q) & X(F(at(waypoint_r)))))) & G(in_bounds()) & G(!in_area(area_8))"}
+{"instruction": "if altitude exceeds 4.5m, immediately descend to 4.0m and continue to waypoint_s", "output": "G(above(4.5) -> F(below(4.0) & X(F(at(waypoint_s)))))"}
+{"instruction": "scan area_9 and area_10 sequentially while staying above 2.2m and avoiding obstacle_7", "output": "F(scan(area_9) & X(scan(area_10))) & G(above(2.2)) & G(clear_of(obstacle_7))"}
+{"instruction": "maintain distance from barrier_1 until reaching waypoint_t, then hover for 25 seconds", "output": "(clear_of(barrier_1) U at(waypoint_t)) & F(at(waypoint_t) & X(hover(25)))"}
+{"instruction": "go to waypoint_u while avoiding area_9, maintain altitude above 3.0m", "output": "F(at(waypoint_u)) & G(!in_area(area_9)) & G(above(3.0))"}
+{"instruction": "if battery drops to 25%, immediately return to base and land", "output": "G(battery_level(25) -> F(at(base_station) & X(land())))"}
+{"instruction": "hover for 30 seconds then move to waypoint_v, while avoiding obstacle_8 and staying above 2.8m", "output": "F(hover(30) & X(move_to(waypoint_v))) & G(clear_of(obstacle_8)) & G(above(2.8))"}
+{"instruction": "scan area_4 until emergency detected, then immediately return to base and land", "output": "(scan(area_4) U emergency_detected()) & F(emergency_detected() & X(F(at(base_station) & X(land()))))"}
+{"instruction": "go to waypoint_w while maintaining altitude between 2.0m and 3.5m, then scan area_5", "output": "F(at(waypoint_w)) & G(above(2.0) & below(3.5)) & F(at(waypoint_w) & X(scan(area_5)))"}
+{"instruction": "if altitude drops below 1.2m, immediately climb to 2.5m and continue to waypoint_x", "output": "G(below(1.2) -> F(above(2.5) & X(F(at(waypoint_x)))))"}
+{"instruction": "fly to waypoint_y then waypoint_z then wp_delta, always staying in bounds and avoiding area_6", "output": "F(at(waypoint_y) & X(F(at(waypoint_z) & X(F(at(wp_delta)))))) & G(in_bounds()) & G(!in_area(area_6))"}
+{"instruction": "maintain speed until reaching waypoint_g, then hover for 35 seconds while scanning area_7", "output": "(moving() U at(waypoint_g)) & F(at(waypoint_g) & X(hover(35) & scan(area_7)))"}
+{"instruction": "if battery reaches 20%, perform emergency landing at nearest safe location", "output": "G(battery_level(20) -> F(land()))"}
+{"instruction": "go to wp_epsilon while avoiding barrier_2 and area_8, maintain altitude above 3.2m", "output": "F(at(wp_epsilon)) & G(clear_of(barrier_2)) & G(!in_area(area_8)) & G(above(3.2))"}
+{"instruction": "scan area_9 until wind speed exceeds 25 knots, then return to base immediately", "output": "(scan(area_9) U wind_speed(25)) & F(wind_speed(25) & X(F(at(base_station))))"}
+{"instruction": "visit checkpoint_1 and checkpoint_2 in any order while staying above 2.5m and avoiding obstacle_3", "output": "F(at(checkpoint_1)) & F(at(checkpoint_2)) & G(above(2.5)) & G(clear_of(obstacle_3))"}
+{"instruction": "maintain battery above 45% until reaching location_a, then immediately start system check", "output": "(battery_level(45) U at(location_a)) & F(at(location_a) & X(system_check()))"}
+{"instruction": "if wind exceeds 30 knots, hover until conditions improve, then resume scanning", "output": "G(wind_speed(30) -> F(hover(20) U !wind_speed(25)))"}
+{"instruction": "go to location_b then location_c, always avoiding area_10 and maintaining altitude above 3.5m", "output": "F(at(location_b) & X(F(at(location_c)))) & G(!in_area(area_10)) & G(above(3.5))"}
+{"instruction": "survey sector_b while avoiding barrier_5 and maintaining altitude above 4.0m", "output": "F(scan(sector_b)) & G(clear_of(barrier_5)) & G(above(4.0))"}
+{"instruction": "sustain altitude above 3.0 meters up to the moment emergency is detected", "output": "above(3.0) U emergency_detected()"}
+{"instruction": "preserve distance from obstacle_1 until reaching waypoint_c", "output": "clear_of(obstacle_1) U at(waypoint_c)"}
+{"instruction": "keep battery above 25 percent until landing occurs", "output": "battery_level(25) U land()"}
+{"instruction": "hold position above 2.5 meters until waypoint_d is reached", "output": "above(2.5) U at(waypoint_d)"}
+{"instruction": "continue staying in bounds until battery drops to 30 percent", "output": "in_bounds() U battery_level(30)"}
+{"instruction": "maintain speed until you arrive at waypoint_e", "output": "moving() U at(waypoint_e)"}
+{"instruction": "persist in hovering until wind conditions improve below 12 knots", "output": "hover(10) U !wind_speed(12)"}
+{"instruction": "keep scanning area_1 until battery level falls below 40 percent", "output": "scan(area_1) U battery_level(40)"}
+{"instruction": "remain stationary until move command is executed", "output": "stationary() U move_to(waypoint_f)"}
+{"instruction": "stay above 1.8 meters until entering area_2", "output": "above(1.8) U in_area(area_2)"}
+{"instruction": "maintain clearance from obstacle_2 until reaching waypoint_g", "output": "clear_of(obstacle_2) U at(waypoint_g)"}
+{"instruction": "keep altitude below 4.0 meters until scanning area_3", "output": "below(4.0) U scan(area_3)"}
+{"instruction": "persist in zone_1 until waypoint_h is attained", "output": "in_area(zone_1) U at(waypoint_h)"}
+{"instruction": "continue hovering until system check completes", "output": "hover(15) U system_check()"}
+{"instruction": "maintain battery above 35 percent until emergency return is triggered", "output": "battery_level(35) U emergency_return()"}
+{"instruction": "achieve waypoint_b while simultaneously maintaining distance from restricted_zone", "output": "F(at(waypoint_b)) & G(!in_area(restricted_zone))"}
+{"instruction": "scan area_1 is the objective, but strictly avoid obstacle_1", "output": "F(scan(area_1)) & G(clear_of(obstacle_1))"}
+{"instruction": "fly to wp_alpha, but under no circumstances exceed 4.0 meters altitude", "output": "F(at(wp_alpha)) & G(!above(4.0))"}
+{"instruction": "navigate to waypoint_i while concurrently staying clear of danger_zone", "output": "F(at(waypoint_i)) & G(!in_area(danger_zone))"}
+{"instruction": "reach waypoint_j is the goal, but never violate altitude above 3.5 meters", "output": "F(at(waypoint_j)) & G(!above(3.5))"}
+{"instruction": "survey area_4 while simultaneously maintaining height above 2.0 meters", "output": "F(scan(area_4)) & G(above(2.0))"}
+{"instruction": "move to waypoint_k, but consistently avoid obstacle_3", "output": "F(at(waypoint_k)) & G(clear_of(obstacle_3))"}
+{"instruction": "hover for 20 seconds while simultaneously staying in bounds", "output": "F(hover(20)) & G(in_bounds())"}
+{"instruction": "land at landing_pad is the objective, but strictly maintain clearance from barrier_1", "output": "F(at(landing_pad)) & G(clear_of(barrier_1))"}
+{"instruction": "go to waypoint_l while concurrently keeping altitude above 1.5 meters", "output": "F(at(waypoint_l)) & G(above(1.5))"}
+{"instruction": "scan area_5 is the goal, but under no circumstances enter restricted_zone", "output": "F(scan(area_5)) & G(!in_area(restricted_zone))"}
+{"instruction": "proceed to waypoint_m while simultaneously avoiding obstacle_4", "output": "F(at(waypoint_m)) & G(clear_of(obstacle_4))"}
+{"instruction": "reach wp_beta while consistently maintaining distance from perimeter_A", "output": "F(at(wp_beta)) & G(clear_of(perimeter_A))"}
+{"instruction": "navigate to waypoint_n, but strictly avoid going below 0.8 meters", "output": "F(at(waypoint_n)) & G(!below(0.8))"}
+{"instruction": "fly to base_station while simultaneously staying clear of area_6", "output": "F(at(base_station)) & G(!in_area(area_6))"}
+{"instruction": "complete reaching waypoint_a and the very next step is scan area_1", "output": "F(at(waypoint_a) & X(scan(area_1)))"}
+{"instruction": "upon landing's completion, emergency_return must be the next action", "output": "F(land() & X(emergency_return()))"}
+{"instruction": "as soon as hovering for 10 seconds is finished, initiate move_to waypoint_n", "output": "F(hover(10) & X(move_to(waypoint_n)))"}
+{"instruction": "complete scanning area_2 and the immediate next step is go to waypoint_o", "output": "F(scan(area_2) & X(move_to(waypoint_o)))"}
+{"instruction": "upon reaching waypoint_p's completion, system_check must be the next action", "output": "F(at(waypoint_p) & X(system_check()))"}
+{"instruction": "as soon as moving to waypoint_q is finished, initiate hover for 25 seconds", "output": "F(at(waypoint_q) & X(hover(25)))"}
+{"instruction": "complete hovering for 35 seconds and the immediate next step is scan area_4", "output": "F(hover(35) & X(scan(area_4)))"}
+{"instruction": "upon scanning area_3's completion, move_to waypoint_r must be the next action", "output": "F(scan(area_3) & X(move_to(waypoint_r)))"}
+{"instruction": "as soon as reaching waypoint_s is finished, initiate hover for 30 seconds", "output": "F(at(waypoint_s) & X(hover(30)))"}
+{"instruction": "complete system check and the very next step is return to base", "output": "F(system_check() & X(move_to(base_station)))"}
+{"instruction": "if emergency is detected, immediately land", "output": "G(emergency_detected() -> F(land()))"}
+{"instruction": "whenever battery reaches 20 percent, eventually perform return to base and land", "output": "G(battery_level(20) -> F(at(base_station) & X(land())))"}
+{"instruction": "in the event entering restricted_zone occurs, exit must follow", "output": "G(in_area(restricted_zone) -> F(!in_area(restricted_zone)))"}
+{"instruction": "if altitude exceeds 5.0 meters, immediately descend to 4.0 meters", "output": "G(above(5.0) -> F(below(4.0)))"}
+{"instruction": "whenever obstacle_1 is observed, eventually change course to avoid it", "output": "G(!clear_of(obstacle_1) -> F(clear_of(obstacle_1)))"}
+{"instruction": "in the event battery drops below 15 percent, emergency return must follow", "output": "G(battery_level(15) -> F(emergency_return()))"}
+{"instruction": "if wind speed exceeds 25 knots, immediately return to base", "output": "G(wind_speed(25) -> F(emergency_return()))"}
+{"instruction": "whenever going out of bounds is observed, eventually return to flight zone", "output": "G(!in_bounds() -> F(in_bounds()))"}
+{"instruction": "in the event altitude drops below 0.5 meters, climb to 2.0 meters must follow", "output": "G(below(0.5) -> F(above(2.0)))"}
+{"instruction": "if system check fails, immediately return to base", "output": "G(!system_check() -> F(at(base_station)))"}
