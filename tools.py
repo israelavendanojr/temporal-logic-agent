@@ -74,9 +74,8 @@ Respond only with the LTL formula."""
             logger.warning(f"Invalid LTL syntax: {error}")
             return f"INVALID_SYNTAX: {error}"
         
-        # Inject safety constraints
-        safe_ltl = parser.inject_safety_constraints(ltl)
-        return safe_ltl
+        # Safety injection disabled - return raw LTL
+        return ltl
         
     except Exception as e:
         logger.error(f"Translation error: {e}")

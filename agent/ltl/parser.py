@@ -145,20 +145,21 @@ class LTLParser:
         params = [p.strip() for p in param_str.split(',') if p.strip()]
         return len(params) <= len(expected_params) if expected_params else True
     
-    def inject_safety_constraints(self, formula: str) -> str:
-        """Automatically inject mandatory safety constraints"""
-        if not formula or formula.startswith("INVALID_SYNTAX:") or formula.startswith("ERROR:"):
-            return formula
-            
-        safety_constraints = [
-            "G(above(0.3))",
-            "G(in_bounds())", 
-            "G(clear_of(obstacles))"
-        ]
-        
-        # Combine original formula with safety constraints
-        safety_ltl = " & ".join(safety_constraints)
-        return f"({formula}) & {safety_ltl}"
+    # def inject_safety_constraints(self, formula: str) -> str:
+    #     """Automatically inject mandatory safety constraints - DISABLED"""
+    #     # Safety injection temporarily disabled per professor guidance
+    #     if not formula or formula.startswith("INVALID_SYNTAX:") or formula.startswith("ERROR:"):
+    #         return formula
+    #         
+    #     safety_constraints = [
+    #         "G(above(0.3))",
+    #         "G(in_bounds())", 
+    #         "G(clear_of(obstacles))"
+    #     ]
+    #     
+    #     # Combine original formula with safety constraints
+    #     safety_ltl = " & ".join(safety_constraints)
+    #     return f"({formula}) & {safety_ltl}"
     
     def simplify_for_compatibility(self, formula: str) -> str:
         """Temporary method to handle model output compatibility issues"""

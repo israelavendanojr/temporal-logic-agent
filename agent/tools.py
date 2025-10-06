@@ -5,7 +5,7 @@ from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from .model_server import get_gguf_model
 from .ltl.parser import LTLParser
-from .ltl.safety import SafetyConstraints
+# from .ltl.safety import SafetyConstraints  # Disabled
 from .config_loader import get_config
 
 # Set up logging
@@ -88,7 +88,6 @@ Available predicates and actions:
 - emergency_return(): return to start position
 - land(): controlled landing
 
-Do not include safety constraints in your response - they will be added automatically.
 Respond only with the LTL formula."""
 
     if context_parts:
@@ -112,9 +111,8 @@ Respond only with the LTL formula."""
             logger.error(f"Invalid LTL syntax: {error_msg}")
             return f"INVALID_SYNTAX: {error_msg}"
         
-        # Inject safety constraints
-        safe_ltl = parser.inject_safety_constraints(base_ltl)
-        return safe_ltl
+        # Safety injection disabled - return raw LTL
+        return base_ltl
         
     except Exception as e:
         logger.error(f"Translation error: {e}")
@@ -149,12 +147,7 @@ def validate_ltl_formula(ltl_formula: str) -> bool:
         logger.warning(f"LTL validation failed: {error_msg}")
         return False
     
-    # Check safety compliance
-    safety_valid, missing_constraints = SafetyConstraints.validate_mission_safety(ltl_formula)
-    if not safety_valid:
-        logger.warning(f"Missing safety constraints: {missing_constraints}")
-        # Note: Don't fail validation for missing safety constraints since they should be auto-injected
-        # This is just for logging/monitoring purposes
+    # Safety validation disabled per professor guidance
     
     return True
 
