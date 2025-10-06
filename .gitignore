@@ -3,3 +3,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 models/translation_model.gguf
+models/LTL_slides.pdf
