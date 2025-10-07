@@ -4,3 +4,4 @@ __pycache__/
 *$py.class
 models/translation_model.gguf
 models/LTL_slides.pdf
+models/ltl_model.gguf
