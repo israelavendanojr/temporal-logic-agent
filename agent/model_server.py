@@ -38,60 +38,39 @@ class GGUFModelWrapper:
         self._load_model(**kwargs)
     
     def _load_model(self, **kwargs):
-        """Load the GGUF model with appropriate settings."""
+        """Load the GGUF model with appropriate settings, prioritizing stable CPU/Metal fallback."""
         if not os.path.exists(self.model_path):
             raise FileNotFoundError(f"Model file not found: {self.model_path}")
+        
+        # --- Stable Parameters (Default for Mac/Unstable GPUs) ---
+        default_params = {
+            "model_path": self.model_path,
+            "n_ctx": 2048,
+            "n_threads": 8,  # Maximize CPU core usage
+            "n_gpu_layers": 0,  # CRITICAL: Forces CPU processing (or Metal fallback via llama_cpp)
+            "verbose": False,
+            "temperature": 0.0,
+            "top_p": 1.0,
+            "top_k": 40,
+            "repeat_penalty": 1.1,
+            "stop": ["<|im_end|>", "\n\n"],
+            "n_batch": 512,
+        }
+        
+        # Merge with any provided kwargs
+        default_params.update(kwargs)
         
         try:
             logger.info(f"Loading GGUF model from {self.model_path}")
             
-            # GPU-OPTIMIZED parameters for maximum speed
-            default_params = {
-                "model_path": self.model_path,
-                "n_ctx": 2048,
-                "n_threads": 8,  # Reduced CPU threads when using GPU
-                "n_gpu_layers": -1,  # CRITICAL: -1 = offload ALL layers to GPU
-                "verbose": False,
-                "temperature": 0.0,  # Deterministic output for LTL translation
-                "top_p": 1.0,
-                "top_k": 40,
-                "repeat_penalty": 1.1,
-                "stop": ["<|im_end|>", "\n\n"],
-                # GPU-specific optimizations
-                "use_mmap": True,  # Memory-mapped file I/O for faster loading
-                "use_mlock": False,  # Don't lock memory (not needed with GPU)
-                "n_batch": 512,  # Larger batch size for GPU processing
-            }
-            
-            # Merge with any provided kwargs
-            default_params.update(kwargs)
-            
             self.model = Llama(**default_params)
-            logger.info("GGUF model loaded successfully with GPU acceleration")
+            logger.info("Model loaded successfully in STABLE mode (CPU/Metal fallback)")
             logger.info(f"GPU layers offloaded: {default_params['n_gpu_layers']}")
             
         except Exception as e:
-            logger.error(f"Failed to load GGUF model: {e}")
-            logger.error("Falling back to CPU-only mode...")
-            # Fallback to CPU if GPU fails
-            try:
-                cpu_params = {
-                    "model_path": self.model_path,
-                    "n_ctx": 2048,
-                    "n_threads": None,  # Use all CPU cores
-                    "n_gpu_layers": 0,  # CPU only
-                    "verbose": False,
-                    "temperature": 0.0,
-                    "top_p": 1.0,
-                    "top_k": 40,
-                    "repeat_penalty": 1.1,
-                    "stop": ["<|im_end|>", "\n\n"],
-                }
-                self.model = Llama(**cpu_params)
-                logger.info("Model loaded in CPU-only mode")
-            except Exception as fallback_e:
-                logger.error(f"CPU fallback also failed: {fallback_e}")
-                raise
+            # If even the stable load fails, raise the error.
+            logger.error(f"Failed to load GGUF model in stable mode: {e}")
+            raise RuntimeError(f"GGUF model failed to load: {e}")
     
     def invoke(self, messages: List[BaseMessage], **kwargs) -> "MockResponse":
         """
