@@ -1,5 +1,5 @@
 """
-GGUF Model Server for LTL Translation
+GGUF Model Server for LTL Translation - GPU OPTIMIZED
 Provides a wrapper around the fine-tuned GGUF model that mimics ChatOllama's interface.
 """
 
@@ -7,7 +7,6 @@ import os
 import logging
 from typing import List, Optional
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
-from langchain_core.callbacks import CallbackManagerForLLMRun
 
 try:
     from llama_cpp import Llama
@@ -46,29 +45,53 @@ class GGUFModelWrapper:
         try:
             logger.info(f"Loading GGUF model from {self.model_path}")
             
-            # Default parameters optimized for LTL translation
+            # GPU-OPTIMIZED parameters for maximum speed
             default_params = {
                 "model_path": self.model_path,
-                "n_ctx": 2048,  # Context length for LTL outputs
-                "n_threads": None,  # Use all available CPU cores
-                "n_gpu_layers": 16,  
+                "n_ctx": 2048,
+                "n_threads": 8,  # Reduced CPU threads when using GPU
+                "n_gpu_layers": -1,  # CRITICAL: -1 = offload ALL layers to GPU
                 "verbose": False,
                 "temperature": 0.0,  # Deterministic output for LTL translation
                 "top_p": 1.0,
                 "top_k": 40,
                 "repeat_penalty": 1.1,
-                "stop": ["<|im_end|>", "\n\n"],  # Stop tokens from the chat template
+                "stop": ["<|im_end|>", "\n\n"],
+                # GPU-specific optimizations
+                "use_mmap": True,  # Memory-mapped file I/O for faster loading
+                "use_mlock": False,  # Don't lock memory (not needed with GPU)
+                "n_batch": 512,  # Larger batch size for GPU processing
             }
             
             # Merge with any provided kwargs
             default_params.update(kwargs)
             
             self.model = Llama(**default_params)
-            logger.info("GGUF model loaded successfully")
+            logger.info("GGUF model loaded successfully with GPU acceleration")
+            logger.info(f"GPU layers offloaded: {default_params['n_gpu_layers']}")
             
         except Exception as e:
             logger.error(f"Failed to load GGUF model: {e}")
-            raise
+            logger.error("Falling back to CPU-only mode...")
+            # Fallback to CPU if GPU fails
+            try:
+                cpu_params = {
+                    "model_path": self.model_path,
+                    "n_ctx": 2048,
+                    "n_threads": None,  # Use all CPU cores
+                    "n_gpu_layers": 0,  # CPU only
+                    "verbose": False,
+                    "temperature": 0.0,
+                    "top_p": 1.0,
+                    "top_k": 40,
+                    "repeat_penalty": 1.1,
+                    "stop": ["<|im_end|>", "\n\n"],
+                }
+                self.model = Llama(**cpu_params)
+                logger.info("Model loaded in CPU-only mode")
+            except Exception as fallback_e:
+                logger.error(f"CPU fallback also failed: {fallback_e}")
+                raise
     
     def invoke(self, messages: List[BaseMessage], **kwargs) -> "MockResponse":
         """
