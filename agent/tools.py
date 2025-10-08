@@ -180,6 +180,13 @@ def check_feasibility(ltl_formula: str) -> str:
     if ltl_formula.startswith("ERROR:"):
         return "NOT FEASIBLE: Translation error"
         
+    # Detect model translation failure pattern F(at(unknown)) early
+    # This catches cases where the model failed to map a query (e.g., altitude/hover)
+    # to a valid predicate and instead produced an invalid placeholder waypoint.
+    unknown_pattern = r"\bF\(\s*at\(unknown\)\s*\)"
+    if re.search(unknown_pattern, ltl_formula):
+        return "NOT FEASIBLE: Translation error - model generated invalid waypoint 'unknown'"
+
     env_data = get_environment_data()
     waypoints = env_data['waypoints']
     
