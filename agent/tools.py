@@ -8,6 +8,8 @@ from .ltl.parser import LTLParser
 from .ltl.semantic_validator import SemanticValidator
 # from .ltl.safety import SafetyConstraints  # Disabled
 from .config_loader import get_config
+from services.ltl_executor import LTLExecutor
+from services.mock_executor import MockExecutor
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -210,6 +212,25 @@ def check_feasibility(ltl_formula: str) -> str:
             return f"NOT FEASIBLE: Altitude {altitude}m outside safe range"
     
     return "FEASIBLE"
+
+@tool
+def execute_ltl_formula(ltl_formula: str) -> str:
+    """Generate an execution plan from an LTL formula and run it with the mock executor."""
+    try:
+        # Build plan
+        executor = LTLExecutor()
+        plan = executor.parse_formula(ltl_formula)
+        # Execute plan
+        runner = MockExecutor()
+        result = runner.run(plan)
+        # Summarize
+        return (
+            f"Execution complete. Final position: {result['final_position']}, "
+            f"Battery: {result['battery']:.0f}%, Steps: {len(result['history'])}"
+        )
+    except Exception as e:
+        logger.error(f"Execution failed: {e}")
+        return f"ERROR: Execution failed - {e}"
 
 @tool
 def ask_for_clarification(ambiguous_query: str) -> str:

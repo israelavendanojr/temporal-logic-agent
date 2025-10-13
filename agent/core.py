@@ -8,6 +8,7 @@ from .tools import (
     sanitize_ltl_formula,
     validate_ltl_formula,
     check_feasibility,
+    execute_ltl_formula,
     ask_for_clarification
 )
 
@@ -54,6 +55,12 @@ def check_feasibility_node(state: AgentState):
     ltl = state['ltl_formula']
     feasibility = check_feasibility.invoke(ltl)
     return {"messages": [HumanMessage(content=feasibility)]}
+
+def execute_node(state: AgentState):
+    """Executes the feasible LTL formula using the mock executor."""
+    ltl = state['ltl_formula']
+    result = execute_ltl_formula.invoke(ltl)
+    return {"messages": [HumanMessage(content=result)]}
     
 def clarify_node(state: AgentState):
     """Asks the user for clarification."""
@@ -128,6 +135,7 @@ def get_compiled_graph():
     workflow.add_node("check_feasibility", check_feasibility_node)
     workflow.add_node("clarify", clarify_node)
     workflow.add_node("update_memory", update_memory_node)
+    workflow.add_node("execute", execute_node)
     workflow.add_node("final_answer", format_final_answer)
 
     workflow.set_entry_point("translate")
@@ -148,11 +156,14 @@ def get_compiled_graph():
         "final_answer": "final_answer"
     })
     
-    # After feasibility check, update memory if feasible, otherwise go to final answer
-    workflow.add_conditional_edges("check_feasibility", lambda x: "update_memory" if x['messages'][-1].content == "FEASIBLE" else "final_answer", {
-        "update_memory": "update_memory",
+    # After feasibility check, execute if feasible, otherwise go to final answer
+    workflow.add_conditional_edges("check_feasibility", lambda x: "execute" if x['messages'][-1].content == "FEASIBLE" else "final_answer", {
+        "execute": "execute",
         "final_answer": "final_answer"
     })
+
+    # After execution, update memory then final answer
+    workflow.add_edge("execute", "update_memory")
     
     # After memory update, go to final answer
     workflow.add_edge("update_memory", "final_answer")
