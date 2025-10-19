@@ -160,10 +160,47 @@ def get_gguf_model(model_path: str = "./models/translation_model.gguf") -> GGUFM
     global _global_model
     
     if _global_model is None:
+        # Try to resolve model path using ROS2 package share directory
+        resolved_model_path = _resolve_model_path(model_path)
         logger.info("Creating new GGUF model instance")
-        _global_model = GGUFModelWrapper(model_path)
+        _global_model = GGUFModelWrapper(resolved_model_path)
     
     return _global_model
+
+
+def _resolve_model_path(model_path: str) -> str:
+    """
+    Resolve model path using ROS2 package share directory or fallback to relative path.
+    
+    Args:
+        model_path: Original model path
+        
+    Returns:
+        Resolved model path
+    """
+    # If it's already an absolute path, use it as is
+    if os.path.isabs(model_path):
+        return model_path
+    
+    # Try to resolve using ROS2 package share directory
+    try:
+        from ament_index_python.packages import get_package_share_directory
+        package_share_dir = get_package_share_directory('uav_ltl_planner')
+        ros2_model_path = os.path.join(package_share_dir, 'models', 'translation_model.gguf')
+        
+        if os.path.exists(ros2_model_path):
+            logger.info(f"Using ROS2 model path: {ros2_model_path}")
+            return ros2_model_path
+        else:
+            logger.warning(f"ROS2 model path not found: {ros2_model_path}")
+    except ImportError:
+        logger.debug("ament_index_python not available, using fallback path resolution")
+    except Exception as e:
+        logger.warning(f"Failed to resolve ROS2 model path: {e}")
+    
+    # Fallback to relative path (for standalone mode)
+    logger.info(f"Using fallback model path: {model_path}")
+    return model_path
 
 
 def clear_global_model():

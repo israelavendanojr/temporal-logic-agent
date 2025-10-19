@@ -11,7 +11,7 @@ class ConfigLoader:
     """Load and validate configuration from YAML files"""
     
     def __init__(self, config_path: str = "config/environment.yaml"):
-        self.config_path = config_path
+        self.config_path = self._resolve_config_path(config_path)
         self._config = None
         self.load_config()
     
@@ -65,6 +65,40 @@ class ConfigLoader:
     def get_drone_state(self) -> Dict[str, Any]:
         """Get current drone state"""
         return self._config['drone']
+    
+    def _resolve_config_path(self, config_path: str) -> str:
+        """
+        Resolve config path using ROS2 package share directory or fallback to relative path.
+        
+        Args:
+            config_path: Original config path
+            
+        Returns:
+            Resolved config path
+        """
+        # If it's already an absolute path, use it as is
+        if os.path.isabs(config_path):
+            return config_path
+        
+        # Try to resolve using ROS2 package share directory
+        try:
+            from ament_index_python.packages import get_package_share_directory
+            package_share_dir = get_package_share_directory('uav_ltl_planner')
+            ros2_config_path = os.path.join(package_share_dir, 'config', 'environment.yaml')
+            
+            if os.path.exists(ros2_config_path):
+                logger.info(f"Using ROS2 config path: {ros2_config_path}")
+                return ros2_config_path
+            else:
+                logger.warning(f"ROS2 config path not found: {ros2_config_path}")
+        except ImportError:
+            logger.debug("ament_index_python not available, using fallback path resolution")
+        except Exception as e:
+            logger.warning(f"Failed to resolve ROS2 config path: {e}")
+        
+        # Fallback to relative path (for standalone mode)
+        logger.info(f"Using fallback config path: {config_path}")
+        return config_path
 
 # Global config instance
 _config_instance = None

@@ -5,3 +5,11 @@ __pycache__/
 models/translation_model.gguf
 models/LTL_slides.pdf
 models/ltl_model.gguf
+
+# ROS2 specific ignores
+build/
+install/
+log/
+*.egg-info/
+
+.pytest_cache/
