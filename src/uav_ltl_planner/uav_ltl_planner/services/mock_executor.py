@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 from .ltl_executor import Action, Constraint, ExecutionPlan
-from agent.config_loader import get_config
+from ..agent.config_loader import get_config
 
 
 logger = logging.getLogger(__name__)
