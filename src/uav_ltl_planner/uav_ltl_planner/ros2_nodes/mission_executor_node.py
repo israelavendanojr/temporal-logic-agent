@@ -123,10 +123,10 @@ class MissionExecutorNode(Node):
         self.get_logger().info(f"Received mission command: {query}")
         
         try:
-            # Process the mission command through the agent
-            result, self.session_state = self._run_agent(query, self.session_state)
+            # Process the mission command through the agent - NOW RETURNS 3 VALUES
+            result, self.session_state, ltl_formula = self._run_agent(query, self.session_state)
             
-            # Publish the LTL formula
+            # Publish the LTL formula (or execution result)
             ltl_msg = String()
             ltl_msg.data = result
             self.ltl_publisher.publish(ltl_msg)
@@ -146,10 +146,10 @@ class MissionExecutorNode(Node):
             self.status_publisher.publish(status_msg)
             self.get_logger().info(f"Published status: {status_msg.data}")
 
-            # After publishing status, execute if we have a valid LTL formula
-            if self.crazyflie_executor and status_msg.data == "EXECUTED":
-                self.get_logger().info("Sending to Crazyflie...")
-                plan = self.ltl_executor.parse_formula(result)
+            # Execute on Crazyflie using captured LTL formula!
+            if self.crazyflie_executor and ltl_formula:
+                self.get_logger().info(f"Sending to Crazyflie: {ltl_formula}")
+                plan = self.ltl_executor.parse_formula(ltl_formula)
                 self.crazyflie_executor.run(plan)
             
         except Exception as e:
@@ -173,10 +173,10 @@ class MissionExecutorNode(Node):
             session_state: Current session state
             
         Returns:
-            Tuple of (result, updated_session_state)
+            Tuple of (result, updated_session_state, ltl_formula_if_available)
         """
         if self.app is None:
-            return "ERROR: Agent graph not compiled.", session_state
+            return "ERROR: Agent graph not compiled.", session_state, None
 
         # Initialize session state on first run
         if session_state is None:
@@ -200,14 +200,24 @@ class MissionExecutorNode(Node):
             "spatial_memory": session_state['spatial_memory']
         }
         
-        # Execute LangGraph workflow
+        # Execute LangGraph workflow and capture LTL formula
         final_answer = ""
         final_state = None
+        captured_ltl_formula = None
+        
         for output in self.app.stream(inputs):
             for key, value in output.items():
                 messages = value.get("messages", [])
                 if messages and hasattr(messages[-1], 'content'):
                     final_answer = messages[-1].content
+                    
+                # Capture the LTL formula from the state before execution
+                if 'ltl_formula' in value and value['ltl_formula']:
+                    ltl = value['ltl_formula']
+                    # Only capture if it's a valid LTL formula (not error messages)
+                    if ltl.startswith('F(') or ltl.startswith('G('):
+                        captured_ltl_formula = ltl
+                        
                 final_state = value
         
         # Update session state from results
@@ -215,7 +225,7 @@ class MissionExecutorNode(Node):
             session_state['conversation_log'] = final_state['conversation_log']
             session_state['spatial_memory'] = final_state['spatial_memory']
         
-        return final_answer, session_state
+        return final_answer, session_state, captured_ltl_formula
 
 
 def main(args=None):

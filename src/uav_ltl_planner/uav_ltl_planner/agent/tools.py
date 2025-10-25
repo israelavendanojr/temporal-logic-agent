@@ -115,6 +115,7 @@ Respond only with the LTL formula."""
         ])
         
         base_ltl = response.content.strip()
+        base_ltl = base_ltl.replace("'", "").replace('"', "")
         
         # Step 1: Syntax validation
         parser = LTLParser()

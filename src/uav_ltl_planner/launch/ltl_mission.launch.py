@@ -83,7 +83,7 @@ def generate_launch_description():
             '  - Log Level: ', LaunchConfiguration('log_level'), '\n',
             '\n',
             'Usage:\n',
-            "  ros2 topic pub /mission_command std_msgs/String \"data: 'fly to waypoint_a'\"\n",
+            "  ros2 topic pub /mission_command std_msgs/String \"data: 'go to waypoint_a'\"\n",
             '  ros2 topic echo /ltl_formula\n',
             '  ros2 topic echo /mission_status\n'
         ]
