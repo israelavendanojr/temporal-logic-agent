@@ -19,7 +19,8 @@ setup(
         (os.path.join('share', package_name, 'launch'), 
          glob('launch/*.launch.py')),
         # Include models directory (but not the actual model files)
-        (os.path.join('share', package_name, 'models'), []),
+        (os.path.join('share', package_name, 'models'), 
+ glob('models/translation_model.gguf')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

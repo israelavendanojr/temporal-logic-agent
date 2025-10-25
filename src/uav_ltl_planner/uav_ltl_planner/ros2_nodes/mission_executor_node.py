@@ -66,6 +66,13 @@ class MissionExecutorNode(Node):
         # Initialize LTL executor and mock executor
         self.ltl_executor = LTLExecutor()
         self.mock_executor = MockExecutor()
+
+        try:
+            from uav_ltl_planner.services.crazyflie_executor import CrazyflieExecutor
+            self.crazyflie_executor = CrazyflieExecutor(self)
+        except Exception as e:
+            self.get_logger().warn(f"Crazyflie executor unavailable: {e}")
+            self.crazyflie_executor = None
         
         # Compile the agent graph
         try:
@@ -138,6 +145,12 @@ class MissionExecutorNode(Node):
             
             self.status_publisher.publish(status_msg)
             self.get_logger().info(f"Published status: {status_msg.data}")
+
+            # After publishing status, execute if we have a valid LTL formula
+            if self.crazyflie_executor and status_msg.data == "EXECUTED":
+                self.get_logger().info("Sending to Crazyflie...")
+                plan = self.ltl_executor.parse_formula(result)
+                self.crazyflie_executor.run(plan)
             
         except Exception as e:
             self.get_logger().error(f"Error processing mission command: {e}")
