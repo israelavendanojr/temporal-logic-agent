@@ -3,8 +3,8 @@
 waypoints:
   landing_pad: [0.0, 0.0, 0.0]
   waypoint_a: [1.0, 2.0, 1.0]
-  waypoint_b: [-1.0, 4.0, -1.0] 
-  waypoint_c: [0.0, 4.0, 2.0]
+  waypoint_b: [3.0, 4.0, -1.0] 
+  waypoint_c: [0.0, 1.0, 2.0]
 
 # Required by config loader but not used by executor
 flight_zone:
