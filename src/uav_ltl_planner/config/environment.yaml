@@ -1,40 +1,21 @@
 # UAV Task Planner Environment Configuration
 
-flight_zone:
-  min: [-5.0, -5.0, 0.3]  # [x_min, y_min, z_min]
-  max: [5.0, 5.0, 3.0]    # [x_max, y_max, z_max]
-
 waypoints:
   landing_pad: [0.0, 0.0, 0.0]
-  waypoint_a: [2.0, 2.0, 1.0]
-  waypoint_b: [-2.0, 2.0, 1.0] 
+  waypoint_a: [1.0, 2.0, 1.0]
+  waypoint_b: [-1.0, 4.0, -1.0] 
   waypoint_c: [0.0, 4.0, 2.0]
-  X: [1.0, 2.0, 3.0]      # Backward compatibility
-  Y: [4.0, 5.0, 6.0]      # Backward compatibility
-  Z: [0.0, 0.0, 0.0]      # Backward compatibility
 
-obstacles:
-  obstacle_1:
-    center: [1.0, 1.0, 0.0]
-    radius: 0.5
-  obstacle_2:
-    center: [-1.0, 3.0, 0.0] 
-    radius: 1.0
-
-areas:
-  area_1:
-    center: [2.0, 2.0, 1.5]
-    size: [2.0, 2.0, 1.0]  # [width, length, height]
+# Required by config loader but not used by executor
+flight_zone:
+  min: [-5.0, -5.0, 0.3]
+  max: [5.0, 5.0, 3.0]
 
 safety:
   min_altitude: 0.3
   max_altitude: 3.0
-  obstacle_clearance: 0.5
-  emergency_battery_level: 20
-  landing_battery_level: 15
 
 drone:
   start_position: [0.0, 0.0, 0.0]
   max_speed: 2.0
   battery_capacity: 100
-  current_battery: 85
