@@ -1,95 +1,99 @@
-# UAV LTL Planner - ROS2 Package
+UAV LTL Planner - ROS2 Package
 
-This document provides setup and usage instructions for the UAV LTL Planner ROS2 package, which converts natural language mission commands into Linear Temporal Logic (LTL) formulas and executes them using a mock drone simulator.
+This document provides setup and usage instructions for the UAV LTL Planner ROS2 package, which converts natural language mission commands into Linear Temporal Logic (LTL) formulas and executes them using a Gazebo-based drone simulator.
 
-## Overview
+Overview
 
 The UAV LTL Planner is a ROS2 package that provides:
-- Natural language to LTL translation using a fine-tuned language model
-- LTL formula validation and feasibility checking
-- Mock drone execution simulation
-- ROS2 topic-based communication for mission commands and status
 
-## Prerequisites
+    Natural language to LTL translation using a fine-tuned GGUF language model
 
-### System Requirements
-- Ubuntu 22.04 (recommended) or macOS
-- Python 3.10+
-- ROS2 Humble (or compatible version)
+    LTL formula validation and feasibility checking
 
-### Dependencies
-- `rclpy` - ROS2 Python client library
-- `std_msgs`, `geometry_msgs`, `nav_msgs`, `trajectory_msgs` - ROS2 message types
-- `langchain-core`, `langchain-ollama`, `langgraph` - AI/ML libraries
-- `llama-cpp-python` - GGUF model inference
-- `PyYAML` - Configuration file parsing
+    Drone execution via the ros_gz_crazyflie simulation stack
 
-## Installation
+    ROS2 topic-based communication for mission commands and status
 
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd temporal-logic-agent
-```
+Prerequisites
 
-### 2. Set Up Python Environment
-```bash
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+System Requirements
 
-# Install Python dependencies
-pip install -r requirements.txt
-```
+    Ubuntu 22.04 (recommended)
 
-### 3. Set Up ROS2 Workspace
-```bash
-# Install ROS2 dependencies (if not already installed)
-sudo apt update
-sudo apt install ros-humble-rclpy ros-humble-std-msgs ros-humble-geometry-msgs ros-humble-nav-msgs ros-humble-trajectory-msgs
+    Python 3.10+
 
-# Build the package
-colcon build --symlink-install
+    ROS2 Jazzy (or compatible version)
 
-# Source the workspace
-source install/setup.bash
-```
+Dependencies
 
-### 4. Download the Model (Optional)
-The package includes a placeholder for the GGUF model. For full functionality, you'll need to:
-1. Obtain the `translation_model.gguf` file
-2. Place it in `src/uav_ltl_planner/models/`
-3. The model will be automatically copied to the install directory during build
+    rclpy - ROS2 Python client library
 
-## Usage
+    std_msgs, geometry_msgs, nav_msgs - ROS2 message types
 
-### 1. Launch the System
-```bash
-# Source the workspace
+    langchain-core, langgraph - AI/ML libraries
+
+    llama-cpp-python - GGUF model inference
+
+    PyYAML - Configuration file parsing
+
+    ros_gz_crazyflie - Gazebo simulation packages
+
+Usage
+
+These instructions assume your workspace is located at ~/Desktop/crazyflie_ws/ros2_ws/.
+
+Terminal 1: Launch the Simulator
+
+First, launch the Crazyflie Gazebo simulation.
+Bash
+
+# Set up the environment
+cd ~/Desktop/crazyflie_ws/ros2_ws/
+source ~/Desktop/crazyflie_ws/ros2_ws/venv/bin/activate
+source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 
-# Launch the mission execution system
+# Set Gazebo simulation paths
+export CRAZYFLIE_SIM_PATH=~/Desktop/crazyflie_ws/simulation_ws/crazyflie-simulation/simulator_files/gazebo
+export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:$CRAZYFLIE_SIM_PATH
+
+# Launch the simulator
+ros2 launch ros_gz_crazyflie_bringup crazyflie_simulation.launch.py
+
+Terminal 2: Launch the LTL Planner
+
+In a new terminal, launch the uav_ltl_planner nodes. This will start the mission_executor and state_monitor.
+Bash
+
+# Set up the environment
+cd ~/Desktop/crazyflie_ws/ros2_ws/
+source ~/Desktop/crazyflie_ws/ros2_ws/venv/bin/activate
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+
+# Launch the LTL nodes
 ros2 launch uav_ltl_planner ltl_mission.launch.py
-```
 
-This will start:
-- `mission_executor` node - Handles mission command processing
-- `state_monitor` node - Monitors execution status
+Terminal 3: Send a Command
 
-### 2. Send Mission Commands
-```bash
-# Send a natural language mission command
-ros2 topic pub /mission_command std_msgs/String "data: 'fly to waypoint_a'"
+In a third terminal, you can publish a natural language command to the /mission_command topic.
+Bash
 
-# Send another command
-ros2 topic pub /mission_command std_msgs/String "data: 'go to waypoint_b then waypoint_c'"
+# Set up the environment
+cd ~/Desktop/crazyflie_ws/ros2_ws/
+source ~/Desktop/crazyflie_ws/ros2_ws/venv/bin/activate
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
 
-# Send a constraint-based command
-ros2 topic pub /mission_command std_msgs/String "data: 'stay above 2 meters while going to waypoint_a'"
-```
+# Send the mission command
+echo "--- SENDING COMMAND ---"
+ros2 topic pub --once /mission_command std_msgs/String "{data: 'go to waypoint_a'}"
 
-### 3. Monitor Results
-```bash
+Terminal 4: Monitor Results
+
+In a separate terminal (or in Terminal 3), you can monitor the output from the LTL planner.
+Bash
+
 # Monitor LTL formula output
 ros2 topic echo /ltl_formula
 
@@ -98,163 +102,31 @@ ros2 topic echo /mission_status
 
 # Monitor system status
 ros2 topic echo /mission_monitor
-```
 
-### 4. Example Commands
-The system supports various types of mission commands:
+ROS2 Topics
 
-**Basic Navigation:**
-- `"fly to waypoint_a"`
-- `"go to waypoint_b"`
-- `"navigate to waypoint_c"`
+Subscribed Topics
 
-**Sequential Missions:**
-- `"go to waypoint_a then waypoint_b"`
-- `"fly to waypoint_a then waypoint_b then waypoint_c"`
+    /mission_command (std_msgs/String) - Natural language mission commands
 
-**Constraints:**
-- `"stay above 2 meters"`
-- `"maintain altitude above 1.5 meters"`
-- `"go to waypoint_a while avoiding obstacle_1"`
+    /crazyflie/odom (nav_msgs/Odometry) - Used by the CrazyflieExecutor to get the drone's current position.
 
-**Actions:**
-- `"hover for 10 seconds"`
-- `"scan area_1"`
+Published Topics
 
-## ROS2 Topics
+    /ltl_formula (std_msgs/String) - Generated LTL formulas or final plan status.
 
-### Subscribed Topics
-- `/mission_command` (std_msgs/String) - Natural language mission commands
+    /mission_status (std_msgs/String) - High-level mission execution status.
 
-### Published Topics
-- `/ltl_formula` (std_msgs/String) - Generated LTL formulas
-- `/mission_status` (std_msgs/String) - Mission execution status
-- `/mission_monitor` (std_msgs/String) - System monitoring information
+    /mission_monitor (std_msgs/String) - System monitoring information.
 
-### Status Values
-- `TRANSLATED` - LTL formula generated successfully
-- `EXECUTED` - Mission executed successfully
-- `NOT_FEASIBLE` - Mission not feasible with current constraints
-- `ERROR` - Error occurred during processing
+    /crazyflie/cmd_vel (geometry_msgs/Twist) - Velocity commands sent to the simulated drone.
 
-## Configuration
+Status Values
 
-### Environment Configuration
-The system uses `src/uav_ltl_planner/config/environment.yaml` for configuration:
+    TRANSLATED - LTL formula generated successfully
 
-```yaml
-flight_zone:
-  min: [-5.0, -5.0, 0.3]
-  max: [5.0, 5.0, 3.0]
+    EXECUTED - Mission plan generated and sent to executor
 
-waypoints:
-  waypoint_a: [2.0, 2.0, 1.0]
-  waypoint_b: [-2.0, 2.0, 1.0]
-  waypoint_c: [0.0, 4.0, 2.0]
+    NOT_FEASIBLE - Mission not feasible with current constraints
 
-obstacles:
-  obstacle_1:
-    center: [1.0, 1.0, 0.0]
-    radius: 0.5
-
-safety:
-  min_altitude: 0.3
-  max_altitude: 3.0
-  emergency_battery_level: 20
-
-drone:
-  start_position: [0.0, 0.0, 0.0]
-  max_speed: 2.0
-  battery_capacity: 100
-```
-
-### Launch Parameters
-```bash
-# Launch with custom config file
-ros2 launch uav_ltl_planner ltl_mission.launch.py config_file:=/path/to/custom/config.yaml
-
-# Launch with debug logging
-ros2 launch uav_ltl_planner ltl_mission.launch.py log_level:=debug
-```
-
-## Development
-
-### Running Individual Nodes
-```bash
-# Run mission executor only
-ros2 run uav_ltl_planner mission_executor
-
-# Run state monitor only
-ros2 run uav_ltl_planner state_monitor
-```
-
-### Testing
-```bash
-# Test the ROS2 package structure
-python -c "import sys; sys.path.insert(0, 'src'); from uav_ltl_planner.ros2_nodes.mission_executor_node import MissionExecutorNode; print('Package structure is correct')"
-```
-
-### Building
-```bash
-colcon build --symlink-install --packages-select uav_ltl_planner
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Model not found error:**
-   - Ensure `translation_model.gguf` is in the models directory
-   - Check that the model file is not gitignored
-
-2. **Import errors:**
-   - Verify all Python dependencies are installed
-   - Check that the ROS2 workspace is properly sourced
-
-3. **Config file not found:**
-   - Ensure `config/environment.yaml` exists
-   - Check file permissions
-
-4. **Node startup failures:**
-   - Check ROS2 installation
-   - Verify package dependencies are met
-   - Check logs with `ros2 run uav_ltl_planner mission_executor --ros-args --log-level debug`
-
-### Debug Mode
-```bash
-# Launch with debug logging
-ros2 launch uav_ltl_planner ltl_mission.launch.py log_level:=debug
-
-# Check node logs
-ros2 node list
-ros2 node info /mission_executor
-```
-
-## Integration with Real UAV Systems
-
-This package is designed to be easily integrated with real UAV systems:
-
-1. **Replace Mock Executor:** The `MockExecutor` class can be replaced with real UAV control interfaces
-2. **Add Real Sensors:** Integrate with actual sensor data for obstacle detection and positioning
-3. **Connect to Flight Controllers:** Interface with PX4, ArduPilot, or other flight control systems
-4. **Add Safety Systems:** Implement real-time safety monitoring and emergency procedures
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with both standalone and ROS2 modes
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the logs and error messages
-3. Open an issue on the repository
-4. Contact the development team
+    ERROR - Error occurred during processing
