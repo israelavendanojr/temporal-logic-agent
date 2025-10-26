@@ -13,6 +13,7 @@ from langchain_core.messages import HumanMessage
 import os
 import sys
 import logging
+import time
 
 # Add the package path to sys.path for imports
 try:
@@ -27,7 +28,6 @@ except ImportError:
 from uav_ltl_planner.agent.core import get_compiled_graph
 from uav_ltl_planner.agent.config_loader import get_config
 from uav_ltl_planner.services.ltl_executor import LTLExecutor
-from uav_ltl_planner.services.mock_executor import MockExecutor
 
 
 class MissionExecutorNode(Node):
@@ -63,9 +63,8 @@ class MissionExecutorNode(Node):
             10
         )
         
-        # Initialize LTL executor and mock executor
+        # Initialize LTL executor
         self.ltl_executor = LTLExecutor()
-        self.mock_executor = MockExecutor()
 
         try:
             from uav_ltl_planner.services.crazyflie_executor import CrazyflieExecutor

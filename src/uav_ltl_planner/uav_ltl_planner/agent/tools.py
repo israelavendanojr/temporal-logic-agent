@@ -5,24 +5,11 @@ from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from .model_server import get_gguf_model
 from .ltl.parser import LTLParser
-from .ltl.semantic_validator import SemanticValidator
-# from .ltl.safety import SafetyConstraints  # Disabled
 from .config_loader import get_config
 from ..services.ltl_executor import LTLExecutor
-from ..services.mock_executor import MockExecutor
 
 # Set up logging
 logger = logging.getLogger(__name__)
-
-# Module-level singletons
-_semantic_validator = None
-
-def get_semantic_validator():
-    """Lazy-load semantic validator"""
-    global _semantic_validator
-    if _semantic_validator is None:
-        _semantic_validator = SemanticValidator()
-    return _semantic_validator
 
 def get_environment_data():
     """Get environment data from configuration"""
@@ -62,20 +49,12 @@ def translate_with_llm(natural_language_query: str) -> str:
 
 @tool
 def translate_to_ltl(natural_language_query: str, conversation_log: list = None, spatial_memory: dict = None) -> str:
-    """Minimal translation without safety injections."""
-    
+    """Minimal translation: query → LTL formula only."""
     env_data = get_environment_data()
-    waypoints = env_data['waypoints']
+    waypoints = list(env_data['waypoints'].keys())
     
-    # MINIMAL system prompt - no extra context
-    system_prompt = f"""Translate drone commands to LTL formulas.
-Available waypoints: {list(waypoints.keys())}
-
-Examples:
-- "go to waypoint_a" → F(at(waypoint_a))
-- "go to waypoint_a then waypoint_b" → F(at(waypoint_a)) U F(at(waypoint_b))
-
-Respond with ONLY the LTL formula."""
+    # Ultra-minimal prompt
+    system_prompt = f"Convert drone command to LTL formula. Available waypoints: {waypoints}. Output ONLY the formula, nothing else."
 
     try:
         response = get_gguf_model().invoke([
@@ -86,7 +65,7 @@ Respond with ONLY the LTL formula."""
         ltl = response.content.strip()
         ltl = ltl.replace("'", "").replace('"', "")
         
-        # Remove any extra explanatory text (model might add "The formula is: ...")
+        # Remove any explanatory text
         if ":" in ltl:
             ltl = ltl.split(":")[-1].strip()
         
@@ -95,10 +74,9 @@ Respond with ONLY the LTL formula."""
         is_valid, error_msg = parser.validate_syntax(ltl)
         
         if not is_valid:
-            logger.warning(f"Invalid LTL syntax: {error_msg}")
+            logger.warning(f"Invalid syntax: {error_msg}")
             return f"INVALID_SYNTAX: {error_msg}"
         
-        # NO SEMANTIC VALIDATION - Keep it simple
         return ltl
         
     except Exception as e:
@@ -182,22 +160,14 @@ def check_feasibility(ltl_formula: str) -> str:
 
 @tool
 def execute_ltl_formula(ltl_formula: str) -> str:
-    """Generate an execution plan from an LTL formula and run it with the mock executor."""
+    """Generate an execution plan from an LTL formula - no mock execution."""
     try:
-        # Build plan
         executor = LTLExecutor()
         plan = executor.parse_formula(ltl_formula)
-        # Execute plan
-        runner = MockExecutor()
-        result = runner.run(plan)
-        # Summarize
-        return (
-            f"Execution complete. Final position: {result['final_position']}, "
-            f"Battery: {result['battery']:.0f}%, Steps: {len(result['history'])}"
-        )
+        return f"Plan generated: {len(plan.actions)} actions"
     except Exception as e:
-        logger.error(f"Execution failed: {e}")
-        return f"ERROR: Execution failed - {e}"
+        logger.error(f"Plan generation failed: {e}")
+        return f"ERROR: Plan generation failed - {e}"
 
 @tool
 def ask_for_clarification(ambiguous_query: str) -> str:
