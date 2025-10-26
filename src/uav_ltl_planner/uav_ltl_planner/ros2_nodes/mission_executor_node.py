@@ -85,6 +85,14 @@ class MissionExecutorNode(Node):
         
         # Initialize session state
         self._initialize_session_state()
+
+        try:
+            self.get_logger().info("Pre-loading LTL translation model...")
+            from uav_ltl_planner.agent.model_server import get_gguf_model
+            get_gguf_model()  # This will load and cache the model
+            self.get_logger().info("✓ Model pre-loaded successfully")
+        except Exception as e:
+            self.get_logger().error(f"Failed to pre-load model: {e}")
         
         self.get_logger().info("Mission Executor Node initialized and ready")
 
@@ -120,6 +128,23 @@ class MissionExecutorNode(Node):
             self.get_logger().warn("Received empty mission command")
             return
         
+        # Wait for model to be ready (up to 30 seconds)
+        if not hasattr(self, '_model_ready_logged'):
+            self.get_logger().info("Waiting for model to be ready...")
+            timeout = 30
+            start = time.time()
+            while time.time() - start < timeout:
+                try:
+                    from uav_ltl_planner.agent.model_server import get_gguf_model
+                    model = get_gguf_model()
+                    if model.model is not None:
+                        self.get_logger().info("✓ Model is ready")
+                        self._model_ready_logged = True
+                        break
+                except:
+                    pass
+                time.sleep(0.5)
+
         self.get_logger().info(f"Received mission command: {query}")
         
         try:

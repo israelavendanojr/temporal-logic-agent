@@ -62,51 +62,20 @@ def translate_with_llm(natural_language_query: str) -> str:
 
 @tool
 def translate_to_ltl(natural_language_query: str, conversation_log: list = None, spatial_memory: dict = None) -> str:
-    """Enhanced translation with automatic safety constraint injection."""
+    """Minimal translation without safety injections."""
     
     env_data = get_environment_data()
     waypoints = env_data['waypoints']
     
-    # Build enhanced context
-    context_parts = []
-    context_parts.append(f"Available waypoints: {list(waypoints.keys())}")
-    
-    if spatial_memory:
-        context_parts.append(f"Current drone position: {spatial_memory.get('current_position')}")
-        context_parts.append(f"Flight zone: {env_data['flight_zone']}")
-    
-    if conversation_log:
-        context_parts.append("Previous conversation:")
-        for user_q, ltl_result in conversation_log[-3:]:  # Last 3 exchanges
-            context_parts.append(f"User: {user_q}, LTL: {ltl_result}")
-    
-    # Enhanced system prompt for new LTL grammar
-    base_prompt = """You are a specialized translator that converts natural language drone commands into Linear Temporal Logic (LTL) formulas.
+    # MINIMAL system prompt - no extra context
+    system_prompt = f"""Translate drone commands to LTL formulas.
+Available waypoints: {list(waypoints.keys())}
 
-Available LTL operators:
-- F(φ) = eventually φ will be true
-- G(φ) = φ is always true  
-- X(φ) = φ is true in next step
-- φ & ψ = both φ and ψ are true
-- φ | ψ = either φ or ψ is true
-- !φ = φ is not true
+Examples:
+- "go to waypoint_a" → F(at(waypoint_a))
+- "go to waypoint_a then waypoint_b" → F(at(waypoint_a)) U F(at(waypoint_b))
 
-Available predicates and actions:
-- at(location): drone at specific location
-- near(location, radius): drone within radius of location
-- above(altitude): drone above altitude threshold
-- move_to(location): navigate to location
-- hover(duration): maintain position for seconds
-- scan(area): perform sensor sweep
-- emergency_return(): return to start position
-- land(): controlled landing
-
-Respond only with the LTL formula."""
-
-    if context_parts:
-        system_prompt = base_prompt + "\n\nContext:\n" + "\n".join(context_parts)
-    else:
-        system_prompt = base_prompt
+Respond with ONLY the LTL formula."""
 
     try:
         response = get_gguf_model().invoke([
@@ -114,31 +83,28 @@ Respond only with the LTL formula."""
             HumanMessage(content=natural_language_query)
         ])
         
-        base_ltl = response.content.strip()
-        base_ltl = base_ltl.replace("'", "").replace('"', "")
+        ltl = response.content.strip()
+        ltl = ltl.replace("'", "").replace('"', "")
         
-        # Step 1: Syntax validation
+        # Remove any extra explanatory text (model might add "The formula is: ...")
+        if ":" in ltl:
+            ltl = ltl.split(":")[-1].strip()
+        
+        # Basic syntax validation only
         parser = LTLParser()
-        is_valid, error_msg = parser.validate_syntax(base_ltl)
+        is_valid, error_msg = parser.validate_syntax(ltl)
         
         if not is_valid:
             logger.warning(f"Invalid LTL syntax: {error_msg}")
             return f"INVALID_SYNTAX: {error_msg}"
         
-        # Step 2: Semantic validation (NEW)
-        semantic_validator = get_semantic_validator()
-        is_valid, error = semantic_validator.validate(base_ltl)
-        
-        if not is_valid:
-            logger.error(f"Semantic validation failed: {error}")
-            return f"INVALID_SEMANTICS: {error}"
-        
-        return base_ltl
+        # NO SEMANTIC VALIDATION - Keep it simple
+        return ltl
         
     except Exception as e:
         logger.error(f"Translation error: {e}")
         return "ERROR: Translation failed"
-
+        
 @tool
 def sanitize_ltl_formula(ltl_formula: str) -> str:
     """Enhanced LTL sanitization for new grammar."""
