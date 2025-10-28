@@ -89,7 +89,7 @@ class MissionExecutorNode(Node):
             self.get_logger().info("Pre-loading LTL translation model...")
             from uav_ltl_planner.agent.model_server import get_gguf_model
             get_gguf_model()  # This will load and cache the model
-            self.get_logger().info("✓ Model pre-loaded successfully")
+            self.get_logger().info("Model pre-loaded successfully")
         except Exception as e:
             self.get_logger().error(f"Failed to pre-load model: {e}")
         
@@ -137,7 +137,7 @@ class MissionExecutorNode(Node):
                     from uav_ltl_planner.agent.model_server import get_gguf_model
                     model = get_gguf_model()
                     if model.model is not None:
-                        self.get_logger().info("✓ Model is ready")
+                        self.get_logger().info("Model is ready")
                         self._model_ready_logged = True
                         break
                 except:

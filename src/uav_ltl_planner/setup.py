@@ -18,6 +18,9 @@ setup(
         # Include launch files
         (os.path.join('share', package_name, 'launch'), 
          glob('launch/*.launch.py')),
+        # Include scripts directory
+        (os.path.join('share', package_name, 'scripts'), 
+         glob('scripts/*.py') + glob('scripts/*.sh')),
         # Include models directory (but not the actual model files)
         (os.path.join('share', package_name, 'models'), 
  glob('models/translation_model.gguf')),

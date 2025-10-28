@@ -49,7 +49,7 @@ def translate_with_llm(natural_language_query: str) -> str:
 
 @tool
 def translate_to_ltl(natural_language_query: str, conversation_log: list = None, spatial_memory: dict = None) -> str:
-    """Minimal translation: query → LTL formula only."""
+    """Minimal translation: query to LTL formula only."""
     env_data = get_environment_data()
     waypoints = list(env_data['waypoints'].keys())
     

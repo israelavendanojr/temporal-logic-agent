@@ -52,7 +52,7 @@ class CrazyflieExecutor:
         self.position_received.set()
         # Debug: Log first position update
         if not hasattr(self, '_first_odom_logged'):
-            self.node.get_logger().info(f"✓ Odometry callback working! Position: [{pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f}]")
+            self.node.get_logger().info(f"Odometry callback working! Position: [{pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f}]")
             self._first_odom_logged = True
     
     def run(self, plan: ExecutionPlan):
@@ -110,7 +110,7 @@ class CrazyflieExecutor:
         
         x, y, _ = self.current_position
         target = (x, y, target_z)
-        self.node.get_logger().info(f"↑ Taking off to Z={target_z:.2f} at current X/Y position.")
+        self.node.get_logger().info(f"Taking off to Z={target_z:.2f} at current X/Y position.")
         return self._navigate_to_target(target, "Takeoff_Altitude")
 
     # --- NEW: Land Method ---
@@ -120,7 +120,7 @@ class CrazyflieExecutor:
         
         x, y, _ = self.current_position
         target = (x, y, 0.05) # Land just above ground
-        self.node.get_logger().info("↓ Landing...")
+        self.node.get_logger().info("Landing...")
         return self._navigate_to_target(target, "Landing_Spot")
     # -----------------------
 
@@ -131,11 +131,11 @@ class CrazyflieExecutor:
             return
         
         target = self.waypoints[waypoint_name]
-        self.node.get_logger().info(f"→ Moving to {waypoint_name} at {target}")
+        self.node.get_logger().info(f"Moving to {waypoint_name} at {target}")
         
         # Wait for odometry with timeout
         if not self.position_received.wait(timeout=5.0):
-            self.node.get_logger().error("⚠ Timeout waiting for odometry")
+            self.node.get_logger().error("Timeout waiting for odometry")
             return
         
         # Reset previous error before starting navigation
@@ -182,7 +182,7 @@ class CrazyflieExecutor:
             
             # Check if reached target
             if distance < self.tolerance:
-                self.node.get_logger().info(f"✓ Reached {waypoint_name} (error: {distance:.3f}m)")
+                self.node.get_logger().info(f"Reached {waypoint_name} (error: {distance:.3f}m)")
                 self._send_zero_velocity()
                 return True
             
