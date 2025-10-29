@@ -1,0 +1,154 @@
+Desktop/crazyflie_ws/ros2_ws
+
+# UAV LTL Planner - Makefile for Build and Launch Orchestration
+
+# =============================================================================
+# Configuration
+# =============================================================================
+SHELL := /bin/bash
+WS_ROOT := $(shell pwd)
+VENV_PATH := $(WS_ROOT)/venv
+ROS_SETUP := /opt/ros/jazzy/setup.bash
+INSTALL_SETUP := $(WS_ROOT)/install/setup.bash
+LOG_DIR := $(WS_ROOT)/log
+PID_DIR := $(WS_ROOT)/.pids
+
+# PID files
+SIM_PID := $(PID_DIR)/simulator.pid
+NODES_PID := $(PID_DIR)/ros_nodes.pid
+
+# =============================================================================
+# Helper Functions
+# =============================================================================
+define source_env
+    source $(VENV_PATH)/bin/activate && \
+    source $(ROS_SETUP) && \
+    if [ -f "$(INSTALL_SETUP)" ]; then \
+        source $(INSTALL_SETUP) || true; \
+    fi
+endef
+# =============================================================================
+# Targets
+# =============================================================================
+
+.PHONY: all build launch cli stop clean logs help status
+
+# Default target
+all: build launch cli
+
+build:
+	@echo "Building packages..."
+	@$(source_env) && \
+	colcon build --packages-select ros_gz_crazyflie_control ros_gz_crazyflie_gazebo ros_gz_crazyflie_bringup uav_ltl_planner
+	@echo "Copying model file..."
+	@mkdir -p install/uav_ltl_planner/share/uav_ltl_planner/models/
+	@cp src/uav_ltl_planner/models/translation_model.gguf install/uav_ltl_planner/share/uav_ltl_planner/models/ 2>/dev/null || true
+	@echo "Build complete."
+	
+# --- Launch Target ---
+launch:
+	@echo "Starting services in background..."
+	@mkdir -p $(LOG_DIR) $(PID_DIR)
+	@echo "Starting simulator with GUI..."
+	@bash -c ' \
+		source $(VENV_PATH)/bin/activate && \
+		source /opt/ros/jazzy/setup.bash && \
+		source $(INSTALL_SETUP) && \
+		export CRAZYFLIE_SIM_PATH=$(HOME)/Desktop/crazyflie_ws/simulation_ws/crazyflie-simulation/simulator_files/gazebo && \
+		export GZ_SIM_RESOURCE_PATH=$$GZ_SIM_RESOURCE_PATH:$$CRAZYFLIE_SIM_PATH && \
+		ros2 launch ros_gz_crazyflie_bringup crazyflie_simulation.launch.py gui:=true world:=crazyflie_world.sdf & echo $$! > $(SIM_PID)'
+	@sleep 3
+	@echo "Starting LTL nodes, logging to $(LOG_DIR)/ros_nodes.log"
+	@bash -c ' \
+		source $(VENV_PATH)/bin/activate && \
+		source $(ROS_SETUP) && \
+		source $(INSTALL_SETUP) && \
+		ros2 launch uav_ltl_planner ltl_mission.launch.py \
+		> $(LOG_DIR)/ros_nodes.log 2>&1 & echo $$! > $(NODES_PID)'
+	@echo "Waiting for services to start..."
+	@sleep 8
+	@echo "Services launched."
+	@$(MAKE) status
+
+# --- CLI Target ---
+cli:
+	@echo "Launching Mission CLI..."
+	@$(source_env) && \
+	python3 $(WS_ROOT)/src/uav_ltl_planner/scripts/mission_cli.py
+	@echo "CLI exited. Run 'make stop' to clean up background services."
+
+# --- Stop Target ---
+stop:
+	@echo "Shutting down background services..."
+	@if [ -f $(SIM_PID) ]; then \
+		PID=$$(cat $(SIM_PID)); \
+		echo "Stopping simulator (PID $$PID)..."; \
+		pkill -P $$PID 2>/dev/null || true; \
+		kill $$PID 2>/dev/null || true; \
+		rm -f $(SIM_PID); \
+	else \
+		echo "No simulator PID file found."; \
+	fi
+	@if [ -f $(NODES_PID) ]; then \
+		PID=$$(cat $(NODES_PID)); \
+		echo "Stopping ROS nodes (PID $$PID)..."; \
+		pkill -P $$PID 2>/dev/null || true; \
+		kill $$PID 2>/dev/null || true; \
+		rm -f $(NODES_PID); \
+	else \
+		echo "No ROS nodes PID file found."; \
+	fi
+	@killall gz 2>/dev/null || true
+	@echo "System stopped."
+
+# --- Clean Target ---
+clean: stop
+	@echo "Cleaning build artifacts..."
+	@rm -rf build/ log/ .pids/
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	@echo "Clean complete. (install/ preserved)"
+
+# --- Deep Clean Target ---
+fullclean: stop
+	@echo "Deep cleaning (including install/)..."
+	@rm -rf build/ install/ log/ .pids/
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	@echo "Full clean complete."
+	
+# --- Logs Target ---
+logs:
+	@echo "=== Simulator Logs ==="
+	@tail -n 50 $(LOG_DIR)/simulator.log 2>/dev/null || echo "No simulator logs found."
+	@echo ""
+	@echo "=== ROS Nodes Logs ==="
+	@tail -n 50 $(LOG_DIR)/ros_nodes.log 2>/dev/null || echo "No ROS nodes logs found."
+
+# --- Status Target ---
+status:
+	@echo "Checking system status..."
+	@if [ -f $(SIM_PID) ] && kill -0 $$(cat $(SIM_PID)) 2>/dev/null; then \
+		echo "✓ Simulator is running (PID $$(cat $(SIM_PID)))"; \
+	else \
+		echo "✗ Simulator is not running"; \
+	fi
+	@if [ -f $(NODES_PID) ] && kill -0 $$(cat $(NODES_PID)) 2>/dev/null; then \
+		echo "✓ ROS nodes are running (PID $$(cat $(NODES_PID)))"; \
+	else \
+		echo "✗ ROS nodes are not running"; \
+	fi
+
+# --- Help Target ---
+help:
+	@echo "UAV LTL Planner - Available Commands"
+	@echo "===================================="
+	@echo "make build   - Build the uav_ltl_planner package"
+	@echo "make launch  - Start simulator and LTL nodes in background"
+	@echo "make cli     - Launch interactive mission control CLI"
+	@echo "make all     - Build, launch, and start CLI (one-step workflow)"
+	@echo "make stop    - Stop all background services"
+	@echo "make clean   - Stop services and remove build artifacts"
+	@echo "make logs    - View recent logs from simulator and nodes"
+	@echo "make status  - Check if services are running"
+	@echo "make help    - Show this help message"
