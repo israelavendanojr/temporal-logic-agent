@@ -10,18 +10,18 @@ import threading
 import sys
 import time
 
-# --- ANSI Color Codes ---
+# --- ANSI Color Codes (Reduced to essential debug colors) ---
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
+    # Essential for Debugging
+    OKGREEN = '\033[92m'  # Success / Command Sent
+    OKBLUE = '\033[94m'   # Info / LTL Formula
+    FAIL = '\033[91m'     # Error / Not Feasible
+    WARNING = '\033[93m'  # Exiting / Warnings
+    
+    # Utility
     ENDC = '\033[0m'
     BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
+    
 # --- The CLI Node ---
 class MissionCLI(Node):
     """
@@ -60,19 +60,24 @@ class MissionCLI(Node):
         """Prints status messages from the /mission_status topic."""
         self.prompt_ready.wait(timeout=5.0)
         status = msg.data
-        color = bcolors.OKBLUE
-        if status == "EXECUTED":
+        
+        # Use Green for Success, Red for Failure, Blue for In-Progress/Other
+        if status == "EXECUTED" or status == "TRANSLATED":
             color = bcolors.OKGREEN
         elif status == "NOT_FEASIBLE" or status == "ERROR":
             color = bcolors.FAIL
+        else:
+            color = bcolors.OKBLUE # Fallback for new/in-progress status
         
+        # \r clears the line to overwrite the prompt when a message arrives
         print(f"\r{color}↳ STATUS: {status}{bcolors.ENDC}")
         self.show_prompt()
 
     def ltl_callback(self, msg):
         """Prints LTL formula results from the /ltl_formula topic."""
         self.prompt_ready.wait(timeout=5.0)
-        print(f"\r{bcolors.OKCYAN}↳ LTL: {msg.data}{bcolors.ENDC}")
+        # LTL is critical debug info, use BOLD BLUE
+        print(f"\r{bcolors.BOLD}{bcolors.OKBLUE}↳ LTL: {msg.data}{bcolors.ENDC}")
         self.show_prompt()
 
     def send_command(self, command: str):
@@ -80,11 +85,13 @@ class MissionCLI(Node):
         msg = String()
         msg.data = command
         self.command_publisher.publish(msg)
-        print(f"{bcolors.OKGREEN}✓ Mission sent: \"{command}\"{bcolors.ENDC}")
+        # Confirmation that the command was successfully published
+        print(f"{bcolors.OKGREEN}✓ Sent: \"{command}\"{bcolors.ENDC}")
 
     def show_prompt(self):
         """Utility to redraw the input prompt."""
-        print(f"\n{bcolors.BOLD}🚁 > {bcolors.ENDC}", end="", flush=True)
+        # Simple, bold prompt for clear input
+        print(f"\n{bcolors.BOLD}> {bcolors.ENDC}", end="", flush=True)
 
     def run_cli_loop(self):
         """
@@ -92,11 +99,12 @@ class MissionCLI(Node):
         """
         time.sleep(1)  # Wait for ROS node to fully initialize
         
+        # Simplified and cleaner startup header
         print("\n" + "="*60)
-        print(f"{bcolors.BOLD}{bcolors.HEADER}UAV MISSION CONTROL CLI{bcolors.ENDC}")
+        print(f"{bcolors.BOLD}UAV MISSION CONTROL CLI{bcolors.ENDC}")
         print("="*60)
-        print(f"{bcolors.OKCYAN}Available waypoints:{bcolors.ENDC} landing_pad, waypoint_a, waypoint_b, waypoint_c")
-        print(f"{bcolors.WARNING}Commands:{bcolors.ENDC} Type your mission and press Enter. Type 'exit' to quit.")
+        print(f"Waypoints: landing_pad, waypoint_a, waypoint_b, waypoint_c")
+        print(f"{bcolors.WARNING}Note:{bcolors.ENDC} Type 'exit' to quit.")
         print("="*60)
         
         self.show_prompt()
