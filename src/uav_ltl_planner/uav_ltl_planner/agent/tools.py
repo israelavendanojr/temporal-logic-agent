@@ -49,12 +49,24 @@ def translate_with_llm(natural_language_query: str) -> str:
 
 @tool
 def translate_to_ltl(natural_language_query: str, conversation_log: list = None, spatial_memory: dict = None) -> str:
-    """Minimal translation: query to LTL formula only."""
+    """Minimal translation: query → LTL formula only."""
     env_data = get_environment_data()
     waypoints = list(env_data['waypoints'].keys())
     
-    # Ultra-minimal prompt
-    system_prompt = f"Convert drone command to LTL formula. Available waypoints: {waypoints}. Output ONLY the formula, nothing else."
+    # CRITICAL: Be explicit about syntax
+    system_prompt = f"""You are an LTL formula generator. Convert commands to STRICT LTL syntax.
+
+RULES:
+- Use ONLY these operators: F() G() X() U & | !
+- Use ONLY these predicates: at(waypoint), above(altitude), below(altitude)
+- Format: F(at(waypoint_name)) for "go to waypoint"
+- Available waypoints: {waypoints}
+
+Example:
+Input: "go to waypoint_a"
+Output: F(at(waypoint_a))
+
+Output ONLY the LTL formula. No explanations."""
 
     try:
         response = get_gguf_model().invoke([
@@ -63,26 +75,38 @@ def translate_to_ltl(natural_language_query: str, conversation_log: list = None,
         ])
         
         ltl = response.content.strip()
+        
+        # Clean common model mistakes
         ltl = ltl.replace("'", "").replace('"', "")
+        ltl = ltl.replace("reach(", "at(")  # Fix model using wrong predicate
+        ltl = ltl.replace("in_circle(", "at(")  # Fix model adding extra syntax
         
-        # Remove any explanatory text
-        if ":" in ltl:
-            ltl = ltl.split(":")[-1].strip()
+        # Remove "Formula:" prefix if present
+        if ltl.lower().startswith("formula:"):
+            ltl = ltl.split(":", 1)[1].strip()
         
-        # Basic syntax validation only
+        # If it doesn't start with F( or G(, wrap it
+        if not ltl.startswith(("F(", "G(", "X(")):
+            # Try to extract just the waypoint if mentioned
+            for wp in waypoints:
+                if wp in ltl:
+                    ltl = f"F(at({wp}))"
+                    break
+        
+        # Validate
         parser = LTLParser()
         is_valid, error_msg = parser.validate_syntax(ltl)
         
         if not is_valid:
-            logger.warning(f"Invalid syntax: {error_msg}")
+            logger.warning(f"Invalid syntax after cleanup: {error_msg}")
+            logger.warning(f"Original model output: {response.content}")
             return f"INVALID_SYNTAX: {error_msg}"
         
         return ltl
         
     except Exception as e:
         logger.error(f"Translation error: {e}")
-        return "ERROR: Translation failed"
-        
+        return "ERROR: Translation failed"        
 @tool
 def sanitize_ltl_formula(ltl_formula: str) -> str:
     """Enhanced LTL sanitization for new grammar."""

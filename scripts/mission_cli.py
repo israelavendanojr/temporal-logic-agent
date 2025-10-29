@@ -9,6 +9,7 @@ from std_msgs.msg import String
 import threading
 import sys
 import time
+from nav_msgs.msg import Odometry
 
 # --- ANSI Color Codes (Reduced to essential debug colors) ---
 class bcolors:
@@ -53,6 +54,15 @@ class MissionCLI(Node):
             10
         )
         
+        # NEW: Subscribe to odometry for live position
+        self.odom_subscriber = self.create_subscription(
+            Odometry,
+            '/crazyflie/odom',
+            self.odom_callback,
+            10
+        )
+        
+        self.current_position = None
         self.get_logger().info("Mission CLI Node initialized.")
         self.prompt_ready = threading.Event()
 
@@ -61,15 +71,20 @@ class MissionCLI(Node):
         self.prompt_ready.wait(timeout=5.0)
         status = msg.data
         
+        # Track if mission is executing
+        if status == "TRANSLATED":
+            self._mission_executing = True
+        elif status in ["NOT_FEASIBLE", "ERROR"]:
+            self._mission_executing = False
+        
         # Use Green for Success, Red for Failure, Blue for In-Progress/Other
         if status == "EXECUTED" or status == "TRANSLATED":
             color = bcolors.OKGREEN
         elif status == "NOT_FEASIBLE" or status == "ERROR":
             color = bcolors.FAIL
         else:
-            color = bcolors.OKBLUE # Fallback for new/in-progress status
+            color = bcolors.OKBLUE
         
-        # \r clears the line to overwrite the prompt when a message arrives
         print(f"\r{color}↳ STATUS: {status}{bcolors.ENDC}")
         self.show_prompt()
 
@@ -92,6 +107,23 @@ class MissionCLI(Node):
         """Utility to redraw the input prompt."""
         # Simple, bold prompt for clear input
         print(f"\n{bcolors.BOLD}> {bcolors.ENDC}", end="", flush=True)
+
+    def odom_callback(self, msg):
+        """Track drone position - only show during execution"""
+        pos = msg.pose.pose.position
+        self.current_position = (pos.x, pos.y, pos.z)
+        
+        # Only print if we have an active mission executing
+        if not hasattr(self, '_mission_executing'):
+            self._mission_executing = False
+        
+        if not hasattr(self, '_last_pos_print'):
+            self._last_pos_print = 0
+        
+        # Only show position updates when mission is executing
+        if self._mission_executing and time.time() - self._last_pos_print > 1.0:
+            print(f"\r{bcolors.OKBLUE}[{pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f}]{bcolors.ENDC}", end="", flush=True)
+            self._last_pos_print = time.time()
 
     def run_cli_loop(self):
         """
