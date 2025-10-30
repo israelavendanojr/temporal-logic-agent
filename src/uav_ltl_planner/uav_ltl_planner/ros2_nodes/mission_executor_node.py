@@ -152,7 +152,7 @@ class MissionExecutorNode(Node):
             
             # Publish the LTL formula (or execution result)
             ltl_msg = String()
-            ltl_msg.data = result
+            ltl_msg.data = ltl_formula if ltl_formula else result
             self.ltl_publisher.publish(ltl_msg)
             self.get_logger().info(f"Published LTL formula: {result}")
             
