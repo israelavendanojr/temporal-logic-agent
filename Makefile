@@ -1,12 +1,12 @@
-Desktop/crazyflie_ws/ros2_ws
-
 # UAV LTL Planner - Makefile for Build and Launch Orchestration
+# This Makefile works from within the package directory
 
 # =============================================================================
 # Configuration
 # =============================================================================
 SHELL := /bin/bash
-WS_ROOT := $(shell pwd)
+PKG_DIR := $(shell pwd)
+WS_ROOT := $(shell cd ../.. && pwd)
 VENV_PATH := $(WS_ROOT)/venv
 ROS_SETUP := /opt/ros/jazzy/setup.bash
 INSTALL_SETUP := $(WS_ROOT)/install/setup.bash
@@ -21,30 +21,31 @@ NODES_PID := $(PID_DIR)/ros_nodes.pid
 # Helper Functions
 # =============================================================================
 define source_env
-    source $(VENV_PATH)/bin/activate && \
-    source $(ROS_SETUP) && \
-    if [ -f "$(INSTALL_SETUP)" ]; then \
-        source $(INSTALL_SETUP) || true; \
-    fi
+	source $(VENV_PATH)/bin/activate && \
+	source $(ROS_SETUP) && \
+	if [ -f "$(INSTALL_SETUP)" ]; then \
+		source $(INSTALL_SETUP) || true; \
+	fi
 endef
+
 # =============================================================================
 # Targets
 # =============================================================================
 
-.PHONY: all build launch cli stop clean logs help status
+.PHONY: all build launch cli stop clean fullclean logs help status
 
 # Default target
 all: build launch cli
 
 build:
-	@echo "Building packages..."
-	@$(source_env) && \
+	@echo "Building packages from workspace root..."
+	@cd $(WS_ROOT) && $(source_env) && \
 	colcon build --packages-select ros_gz_crazyflie_control ros_gz_crazyflie_gazebo ros_gz_crazyflie_bringup uav_ltl_planner
 	@echo "Copying model file..."
-	@mkdir -p install/uav_ltl_planner/share/uav_ltl_planner/models/
-	@cp src/uav_ltl_planner/models/translation_model.gguf install/uav_ltl_planner/share/uav_ltl_planner/models/ 2>/dev/null || true
+	@mkdir -p $(WS_ROOT)/install/uav_ltl_planner/share/uav_ltl_planner/models/
+	@cp $(PKG_DIR)/models/translation_model.gguf $(WS_ROOT)/install/uav_ltl_planner/share/uav_ltl_planner/models/ 2>/dev/null || true
 	@echo "Build complete."
-	
+
 # --- Launch Target ---
 launch:
 	@echo "Starting services in background..."
@@ -52,7 +53,7 @@ launch:
 	@echo "Starting simulator with GUI..."
 	@bash -c ' \
 		source $(VENV_PATH)/bin/activate && \
-		source /opt/ros/jazzy/setup.bash && \
+		source $(ROS_SETUP) && \
 		source $(INSTALL_SETUP) && \
 		export CRAZYFLIE_SIM_PATH=$(HOME)/Desktop/crazyflie_ws/simulation_ws/crazyflie-simulation/simulator_files/gazebo && \
 		export GZ_SIM_RESOURCE_PATH=$$GZ_SIM_RESOURCE_PATH:$$CRAZYFLIE_SIM_PATH && \
@@ -73,8 +74,8 @@ launch:
 # --- CLI Target ---
 cli:
 	@echo "Launching Mission CLI..."
-	@$(source_env) && \
-	python3 $(WS_ROOT)/src/uav_ltl_planner/scripts/mission_cli.py
+	@cd $(WS_ROOT) && $(source_env) && \
+	python3 $(PKG_DIR)/scripts/mission_cli.py
 	@echo "CLI exited. Run 'make stop' to clean up background services."
 
 # --- Stop Target ---
@@ -103,20 +104,20 @@ stop:
 
 # --- Clean Target ---
 clean: stop
-	@echo "Cleaning build artifacts..."
-	@rm -rf build/ log/ .pids/
-	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	@echo "Cleaning build artifacts in workspace..."
+	@cd $(WS_ROOT) && rm -rf build/ log/ .pids/
+	@find $(PKG_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find $(PKG_DIR) -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 	@echo "Clean complete. (install/ preserved)"
 
 # --- Deep Clean Target ---
 fullclean: stop
-	@echo "Deep cleaning (including install/)..."
-	@rm -rf build/ install/ log/ .pids/
-	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	@echo "Deep cleaning workspace (including install/)..."
+	@cd $(WS_ROOT) && rm -rf build/ install/ log/ .pids/
+	@find $(PKG_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find $(PKG_DIR) -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 	@echo "Full clean complete."
-	
+
 # --- Logs Target ---
 logs:
 	@echo "=== Simulator Logs ==="
@@ -143,12 +144,17 @@ status:
 help:
 	@echo "UAV LTL Planner - Available Commands"
 	@echo "===================================="
-	@echo "make build   - Build the uav_ltl_planner package"
-	@echo "make launch  - Start simulator and LTL nodes in background"
-	@echo "make cli     - Launch interactive mission control CLI"
-	@echo "make all     - Build, launch, and start CLI (one-step workflow)"
-	@echo "make stop    - Stop all background services"
-	@echo "make clean   - Stop services and remove build artifacts"
-	@echo "make logs    - View recent logs from simulator and nodes"
-	@echo "make status  - Check if services are running"
-	@echo "make help    - Show this help message"
+	@echo "make build     - Build the uav_ltl_planner package"
+	@echo "make launch    - Start simulator and LTL nodes in background"
+	@echo "make cli       - Launch interactive mission control CLI"
+	@echo "make all       - Build, launch, and start CLI (one-step workflow)"
+	@echo "make stop      - Stop all background services"
+	@echo "make clean     - Stop services and remove build artifacts"
+	@echo "make fullclean - Deep clean including install directory"
+	@echo "make logs      - View recent logs from simulator and nodes"
+	@echo "make status    - Check if services are running"
+	@echo "make help      - Show this help message"
+	@echo ""
+	@echo "Usage from package directory:"
+	@echo "  cd ~/Desktop/crazyflie_ws/ros2_ws/src/uav_ltl_planner"
+	@echo "  make all"
