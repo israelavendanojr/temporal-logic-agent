@@ -13,3 +13,4 @@ log/
 *.egg-info/
 
 .pytest_cache/
+book_venv/
