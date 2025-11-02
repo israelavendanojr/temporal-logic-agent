@@ -1,132 +1,111 @@
-UAV LTL Planner - ROS2 Package
+# Temporal Logic Agent
 
-This document provides setup and usage instructions for the UAV LTL Planner ROS2 package, which converts natural language mission commands into Linear Temporal Logic (LTL) formulas and executes them using a Gazebo-based drone simulator.
+A ROS2-based system for translating natural language drone mission commands into Linear Temporal Logic (LTL) formulas and executing them in a Gazebo simulation environment. This project combines fine-tuned large language models with LTL planning to enable intuitive high-level control of autonomous unmanned aerial vehicles.
 
-Overview
+## Quick Start
 
-The UAV LTL Planner is a ROS2 package that provides:
+Build and launch the complete system:
 
-    Natural language to LTL translation using a fine-tuned GGUF language model
+```
+make build
+make launch
+make cli
+```
 
-    LTL formula validation and feasibility checking
+Monitor system status:
 
-    Drone execution via the ros_gz_crazyflie simulation stack
+```
+make status
+```
 
-    ROS2 topic-based communication for mission commands and status
+Stop all services:
 
-Prerequisites
+```
+make stop
+```
 
-System Requirements
+## Architecture
 
-    Ubuntu 22.04 (recommended)
+```
+Natural Language Command
+         |
+         v
+  Mission CLI Node
+         |
+         v
+   /mission_command (ROS2 Topic)
+         |
+         v
+  Mission Executor Node
+         |
+         v
+  LangGraph Agent Core
+         |
+         v
+  [GGUF Translation Model] --> LTL Formula
+         |                            |
+         |                            v
+         |                   LTL Parser & Validator
+         |                            |
+         |                            v
+         |                   Feasibility Checker
+         |                            |
+         |                            v
+         |                   LTL Executor
+         |                            |
+         +--------------------------> Plan Generator
+                                         |
+                                         v
+                              /crazyflie/cmd_vel (ROS2 Topic)
+                                         |
+                                         v
+                              Gazebo Simulator (Crazyflie Drone)
+```
 
-    Python 3.10+
+## Project Structure
 
-    ROS2 Jazzy (or compatible version)
-
-Dependencies
-
-    rclpy - ROS2 Python client library
-
-    std_msgs, geometry_msgs, nav_msgs - ROS2 message types
-
-    langchain-core, langgraph - AI/ML libraries
-
-    llama-cpp-python - GGUF model inference
-
-    PyYAML - Configuration file parsing
-
-    ros_gz_crazyflie - Gazebo simulation packages
-
-Usage
-
-These instructions assume your workspace is located at ~/Desktop/crazyflie_ws/ros2_ws/.
-
-Terminal 1: Launch the Simulator
-
-First, launch the Crazyflie Gazebo simulation.
-Bash
-
-# Set up the environment
-cd ~/Desktop/crazyflie_ws/ros2_ws/
-source ~/Desktop/crazyflie_ws/ros2_ws/venv/bin/activate
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-
-# Set Gazebo simulation paths
-export CRAZYFLIE_SIM_PATH=~/Desktop/crazyflie_ws/simulation_ws/crazyflie-simulation/simulator_files/gazebo
-export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:$CRAZYFLIE_SIM_PATH
-
-# Launch the simulator
-ros2 launch ros_gz_crazyflie_bringup crazyflie_simulation.launch.py
-
-Terminal 2: Launch the LTL Planner
-
-In a new terminal, launch the uav_ltl_planner nodes. This will start the mission_executor and state_monitor.
-Bash
-
-# Set up the environment
-cd ~/Desktop/crazyflie_ws/ros2_ws/
-source ~/Desktop/crazyflie_ws/ros2_ws/venv/bin/activate
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-
-# Launch the LTL nodes
-ros2 launch uav_ltl_planner ltl_mission.launch.py
-
-Terminal 3: Send a Command
-
-In a third terminal, you can publish a natural language command to the /mission_command topic.
-Bash
-
-# Set up the environment
-cd ~/Desktop/crazyflie_ws/ros2_ws/
-source ~/Desktop/crazyflie_ws/ros2_ws/venv/bin/activate
-source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-
-# Send the mission command
-echo "--- SENDING COMMAND ---"
-ros2 topic pub --once /mission_command std_msgs/String "{data: 'go to waypoint_a'}"
-
-Terminal 4: Monitor Results
-
-In a separate terminal (or in Terminal 3), you can monitor the output from the LTL planner.
-Bash
-
-# Monitor LTL formula output
-ros2 topic echo /ltl_formula
-
-# Monitor mission status
-ros2 topic echo /mission_status
-
-# Monitor system status
-ros2 topic echo /mission_monitor
-
-ROS2 Topics
-
-Subscribed Topics
-
-    /mission_command (std_msgs/String) - Natural language mission commands
-
-    /crazyflie/odom (nav_msgs/Odometry) - Used by the CrazyflieExecutor to get the drone's current position.
-
-Published Topics
-
-    /ltl_formula (std_msgs/String) - Generated LTL formulas or final plan status.
-
-    /mission_status (std_msgs/String) - High-level mission execution status.
-
-    /mission_monitor (std_msgs/String) - System monitoring information.
-
-    /crazyflie/cmd_vel (geometry_msgs/Twist) - Velocity commands sent to the simulated drone.
-
-Status Values
-
-    TRANSLATED - LTL formula generated successfully
-
-    EXECUTED - Mission plan generated and sent to executor
-
-    NOT_FEASIBLE - Mission not feasible with current constraints
-
-    ERROR - Error occurred during processing
+```
+temporal-logic-agent/
+├── Makefile                          # Build and launch orchestration
+├── requirements.txt                  # Python dependencies
+├── models/
+│   ├── lifted_data.jsonl            # Training dataset
+│   ├── ltl-notebook.ipynb          # Model training notebook
+│   ├── pack_dataset.py             # Dataset preprocessing utilities
+│   └── run_qlora.py                # QLoRA fine-tuning script
+├── scripts/
+│   └── mission_cli.py              # Interactive mission control CLI
+└── src/
+    └── uav_ltl_planner/
+        ├── config/
+        │   └── environment.yaml
+        ├── launch/
+        │   └── ltl_mission.launch.py
+        ├── package.xml
+        ├── setup.cfg
+        ├── setup.py
+        ├── scripts/
+        │   ├── launch.sh
+        │   └── mission_cli.py
+        └── uav_ltl_planner/
+            ├── __init__.py
+            ├── agent/
+            │   ├── __init__.py
+            │   ├── config_loader.py
+            │   ├── core.py               # LangGraph agent workflow
+            │   ├── model_server.py       # GGUF model inference
+            │   ├── tools.py              # Agent tool functions
+            │   └── ltl/
+            │       ├── __init__.py
+            │       ├── exceptions.py
+            │       ├── grammar.py        # LTL grammar definition
+            │       └── parser.py         # LTL syntax validator
+            ├── ros2_nodes/
+            │   ├── __init__.py
+            │   ├── mission_executor_node.py  # Main ROS2 node
+            │   └── state_monitor_node.py     # System state monitor
+            └── services/
+                ├── __init__.py
+                ├── crazyflie_executor.py     # Crazyflie integration
+                └── ltl_executor.py           # LTL plan execution
+```
